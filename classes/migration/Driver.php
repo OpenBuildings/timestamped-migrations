@@ -1,23 +1,11 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
 /**
- * Migrations
+ * Driver
  *
- * An open source utility for s/Code Igniter/Kohana inspired by Ruby on Rails
- *
- * Note: This is a work in progress. Merely a wrapper for all the currently
- * existing DBUtil class, and a CI adaptation of all the RoR conterparts.
- * many of the methods in this helper might not function properly in some DB
- * engines and other are not yet finished developing.
- * This helper is being released as a complement for the Migrations utility.
- *
- * Reworked for Kohana by Jamie Madill
- *
- * @package		Migrations
- * @author		Mat�as Montes
- * @author      Jamie Madill
+ * @package    Timestamped-migrations
+ * @author     Ivan K
  */
-
 abstract class Migration_Driver
 {
 	/**

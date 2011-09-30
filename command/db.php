@@ -1,5 +1,11 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
+/**
+ * Command line interface for Migrations.
+ *
+ * @package    Timestamped-migrations
+ * @author     Ivan K
+ */
 class Command_DB extends Command
 {
 	protected $migrations = null;

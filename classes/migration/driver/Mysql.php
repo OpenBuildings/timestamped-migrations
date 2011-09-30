@@ -1,5 +1,11 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
+/**
+ * Mysql Driver 
+ *
+ * @package    Timestamped-migrations
+ * @author     Ivan K
+ */
 class Migration_Driver_Mysql extends Migration_Driver
 {
 	public function generate_schema()

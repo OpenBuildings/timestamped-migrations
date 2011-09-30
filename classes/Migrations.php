@@ -1,15 +1,10 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
 /**
- * Migrations
+ * Migrations class.
  *
- * An open source utility inspired by Ruby on Rails
- *
- * Reworked for Kohana by Jamie Madill
- *
- * @author    Matías Montes
- * @author      Jamie Madill
- * @ref migrations_tutorial Migrations Tutorial
+ * @package    Timestamped-migrations
+ * @author     Ivan K
  */
 class Migrations
 {

@@ -1,11 +1,9 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 /**
- * Database exceptions.
+ * Migration exceptions.
  *
- * @package    Kohana/Database
+ * @package    Timestamped-migrations
  * @category   Exceptions
- * @author     Kohana Team
- * @copyright  (c) 2009 Kohana Team
- * @license    http://kohanaphp.com/license
+ * @author     Ivan K
  */
 class Migration_Exception extends Kohana_Exception {}
