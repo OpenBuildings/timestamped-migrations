@@ -23,12 +23,14 @@ class Migrations
   {
     $this->config = arr::merge(Kohana::$config->load('migrations')->as_array(), (array) $config);
 
-    if ( ! isset($this->config['type']))
-    {
-      throw new Migration_Exception('Driver not defined, please define "type"');
-    }
-    $driver = 'Migration_Driver_'.ucfirst($this->config['type']);
-    $this->driver = new $driver($cthis->config);
+    $database = Kohana::$config->load('database.'.Arr::get(Kohana::$config->load('migrations'), 'database', 'default'));
+
+    // Set the driver class name
+    $driver = 'Migration_Driver_'.ucfirst($database['type']);
+
+    // Create the database connection instance
+    $this->driver = new $driver(Arr::get(Kohana::$config->load('migrations'), 'database', 'default'));    
+
     $this->driver->generate_schema();
 
     if( ! is_dir($this->config['path']))

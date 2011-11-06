@@ -173,6 +173,58 @@ You can also give a --version and it will roll back all the migrations down to t
 			$this->log($version.' '.get_class($migration).' : migrated ('.number_format($end-$start, 4).'s)', Command::OK);
 		}
 	}
+	const COPY_STRUCTURE_BRIEF = "Copy structure from default DB to another";
+	const COPY_STRUCTURE_DESC = "Dump the current database structure to a temporary file and them import it to the given databse. 
+The first argument is the name of the database connection in you database config file. 
+Removes all the current structure of the target database. 
+It will prompt before preceeding.";
+
+	public function copy_structure($database)
+	{
+		$dbs = array();
+		$dbs['from'] = Kohana::$config->load('database.default.connection');
+		$dbs['to'] = Kohana::$config->load("database.$database.connection");
+
+		foreach($dbs as &$db)
+		if( ! isset($db['database']) )
+		{
+			$matches = array();
+			if( ! preg_match('/dbname=([^;]+);', $db['dsn'], $matches));
+				throw new Kohana_Exception("Error connecting to database, database missing");
+			$db['database'] = $matches[1];
+		}
+		$file = tempnam(sys_get_temp_dir(), "Database_");
+		
+		$this->log("This will destroy database ".$dbs['to']['database']."Are you sure? [yes/NO]", Command::WARNING);
+
+		$input = strtolower(trim(fgets(STDIN))); 
+
+		if($input == 'yes')
+		{
+			$this->log("Dumping current structure to $file", Command::OK);
+			system(strtr("mysqldump -u:username -p:password --add-drop-database --add-drop-table --no-data :database > :tmp ", array(
+				':username' => $dbs['from']['username'],
+				':password' => $dbs['from']['password'],
+				':database' => $dbs['from']['database'],
+				':tmp'      => $file
+			)));
+
+			$this->log("Importing structure from $file to ".$dbs['to']['database'], Command::OK);
+			system(strtr("mysql -u:username -p:password :database < :tmp ", array(
+				':username' => $dbs['to']['username'],
+				':password' => $dbs['to']['password'],
+				':database' => $dbs['to']['database'],
+				':tmp'      => $file
+			)));
+
+			$this->log("removing $file", Command::OK);
+			unlink($file);
+		}
+		else
+		{
+			$this->log("Nothing done", Command::WARNING);
+		}
+	}
 
 	const GENERATE_BRIEF = "Generate a migration file";
 	public function generate($name = null)

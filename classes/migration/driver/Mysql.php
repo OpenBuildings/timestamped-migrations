@@ -8,9 +8,36 @@
  */
 class Migration_Driver_Mysql extends Migration_Driver
 {
+	protected $pdo;
+
+	public function __construct($database)
+	{
+		if($database instanceof PDO)
+		{
+			$this->pdo = $database;
+		}
+		else
+		{
+			$database = Kohana::$config->load('database.'.$database);
+
+			if($database['type'] !== 'pdo')
+			{
+				$database['connection']['dsn'] = $database['type'].':'.
+				'host='.$database['connection']['hostname'].';'.
+				'dbname='.$database['connection']['database'];
+			}
+
+			$this->pdo = new PDO(
+				$database['connection']['dsn'], 
+				$database['connection']['username'], 
+				$database['connection']['password']
+			);
+		}
+	}
+
 	public function generate_schema()
 	{
-		DB::query(NULL, "CREATE TABLE IF NOT EXISTS schema_version (version int)")->execute();
+		$this->pdo->exec("CREATE TABLE IF NOT EXISTS schema_version (version int)");
 
 		return $this;
 	}
@@ -18,7 +45,7 @@ class Migration_Driver_Mysql extends Migration_Driver
 	public function get_executed_migrations()
 	{
 		$migrations = array();
-		foreach(DB::query(Database::SELECT, 'SELECT version FROM schema_version ORDER BY version ASC')->execute() as $result)
+		foreach($this->pdo->query('SELECT version FROM schema_version ORDER BY version ASC') as $result)
 		{
 			$migrations[] = intval($result['version']);
 		}
@@ -28,17 +55,17 @@ class Migration_Driver_Mysql extends Migration_Driver
 
 	public function set_executed($version)
 	{
-		DB::insert('schema_version', array('version'))->values(array($version))->execute();
+		$this->pdo->prepare("INSERT INTO schema_version SET version = ?")->execute(array($version));
 		return $this;
 	}
 
 	public function set_unexecuted($version)
 	{
-		DB::delete('schema_version')->where('version', '=', $version)->execute();
+		$this->pdo->prepare('DELETE FROM schema_version WHERE version = ?')->execute(array($version));
 		return $this;
 	}
 
-	public function create_table($table_name, $fields, $primary_key = TRUE, $if_not_exists=false)
+	public function create_table($table_name, $fields, $primary_key = TRUE, $if_not_exists = FALSE)
 	{
 		$sql = "CREATE TABLE ".($if_not_exists?'IF NOT EXISTS ':'')." `$table_name` (";
 
@@ -81,27 +108,27 @@ class Migration_Driver_Mysql extends Migration_Driver
 		
 		$sql .= ")";
 
-		DB::query(null, $sql);
+		$this->pdo->exec($sql);
 
 		return $this;
 	}
 
-	public function drop_table($table_name)
+	public function drop_table($table_name, $if_exists = FALSE)
 	{
-		DB::query(null, "DROP TABLE `$table_name`");
+		$this->pdo->exec("DROP TABLE ".($if_exists? 'IF EXISTS ' : '')."`$table_name`");
 		return $this;
 	}
 
 	public function rename_table($old_name, $new_name)
 	{
-		DB::query(null, "RENAME TABLE `$old_name`  TO `$new_name` ;");
+		$this->pdo->exec("RENAME TABLE `$old_name`  TO `$new_name` ;");
 		return $this;
 	}
 	
 	public function add_column($table_name, $column_name, $params)
 	{
 		$sql = "ALTER TABLE `$table_name` ADD COLUMN " . $this->compile_column($column_name, $params, TRUE);
-		DB::query(null, $sql);
+		$this->pdo->exec($sql);
 		return $this;
 	}
 
@@ -109,20 +136,21 @@ class Migration_Driver_Mysql extends Migration_Driver
 	{
 		$params = $this->get_column($table_name, $column_name);
 		$sql    = "ALTER TABLE `$table_name` CHANGE `$column_name` " . $this->compile_column($new_column_name, $params);
-		DB::query(null, $sql);
+		$this->pdo->exec($sql);
 		return $this;
 	}
 	
 	public function change_column($table_name, $column_name, $params)
 	{
 		$sql = "ALTER TABLE `$table_name` MODIFY " . $this->compile_column($column_name, $params);
-		DB::query(null, $sql);
+		$this->pdo->exec($sql);
 		return $this;
 	}
 	
 	public function remove_column($table_name, $column_name)
 	{
-		DB::query(null, "ALTER TABLE `$table_name` DROP COLUMN `$column_name` ;");
+		$this->pdo->exec("ALTER TABLE `$table_name` DROP COLUMN `$column_name` ;");
+
 		return $this;
 	}
 	
@@ -148,13 +176,13 @@ class Migration_Driver_Mysql extends Migration_Driver
 		
 		$sql  = rtrim($sql, ',');
 		$sql .= ')';
-		DB::query(null, $sql);
+		$this->pdo->exec($sql);
 		return $this;
 	}
 
 	public function remove_index($table_name, $index_name)
 	{
-		DB::query(null, "ALTER TABLE `$table_name` DROP INDEX `$index_name`");
+		$this->pdo->exec("ALTER TABLE `$table_name` DROP INDEX `$index_name`");
 		return $this;
 	}
 	
@@ -179,7 +207,7 @@ class Migration_Driver_Mysql extends Migration_Driver
 				{
 					case 'after':   if ($allow_order) $order = "AFTER `$param`"; break;
 					case 'null':    $null = (bool) $param; break;
-					case 'default': $default = 'DEFAULT ' . ( $param == 'CURRENT_TIMESTAMP' ? $param : $this->db->escape($param)); break;
+					case 'default': $default = 'DEFAULT ' . ( $param == 'CURRENT_TIMESTAMP' ? $param : $this->pdo->quote($param)); break;
 					case 'auto':    $auto = (bool) $param; break;
 					case 'unsigned':$unsigned = (bool) $param; break;
 					case 'primary': $primary = (bool) $param; break;
@@ -232,15 +260,15 @@ class Migration_Driver_Mysql extends Migration_Driver
 	
 	protected function get_column($table_name, $column_name)
 	{
-		$result = $this->db->query("SHOW COLUMNS FROM `$table_name` LIKE '$column_name'");
+		$result = $this->pdo->query("SHOW COLUMNS FROM `$table_name` LIKE '$column_name'");
 
-		if ($result->count() !== 1)
+		if ($result->rowCount() !== 1)
 		{
 			throw new Migration_Exception("Column :column was not found in table :table", array(':column' => $column_name, ':table' => $column_name));
 		}
 
 		
-		$result = $result->current();
+		$result = $result->fetchObject();
 		$params = array($this->migration_type($result->Type));
 		
 		if ($result->Null == 'NO')
@@ -270,7 +298,7 @@ class Migration_Driver_Mysql extends Migration_Driver
 	
 	protected function native_type($type, $limit)
 	{
-		if (!$this->is_type($type))
+		if ( ! $this->is_type($type))
 		{
 			throw new Migration_Exception('Invalid database or migration type :type', array(':type' => $type));
 		}

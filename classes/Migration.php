@@ -18,16 +18,13 @@ abstract class Migration
 	{
 		$this->config = arr::merge(Kohana::$config->load('migrations')->as_array(), (array) $config);
 
-		if ( ! isset($this->config['type']))
-		{
-			throw new Migration_Exception('Driver not defined, please define "type"');
-		}
+		$database = Kohana::$config->load('database.'.Arr::get(Kohana::$config->load('migrations'), 'database', 'default'));
 
 		// Set the driver class name
-		$driver = 'Migration_Driver_'.ucfirst($this->config['type']);
+		$driver = 'Migration_Driver_'.ucfirst($database['type']);
 
 		// Create the database connection instance
-		$this->driver = new $driver();		
+		$this->driver = new $driver(Arr::get(Kohana::$config->load('migrations'), 'database', 'default'));		
 	}
 
 	public function log($message)
@@ -84,9 +81,10 @@ abstract class Migration
 	 * @param	array
 	 * @param	mixed    Primary key, false if not desired, not specified sets to 'id' column.
 	 *                   Will be set to auto_increment, serial, etc.
+	 * @param bool if_not_exists
 	 * @return	boolean
 	 */
-	public function create_table($table_name, $fields, $primary_key = TRUE)
+	public function create_table($table_name, $fields, $primary_key = TRUE, $if_not_exists = FALSE)
 	{
 		return $this->run_driver("create_table( $table_name, array(".join(", ", array_keys($fields)).") )", 'create_table', func_get_args());
 	}

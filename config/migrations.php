@@ -3,5 +3,5 @@
 return array(
 	'log' => NULL,
 	'path' => APPPATH.'migrations',
-	'type' => 'mysql',
+	'database' => 'default',
 );
