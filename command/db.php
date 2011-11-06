@@ -3,8 +3,10 @@
 /**
  * Command line interface for Migrations.
  *
- * @package    Timestamped-migrations
+ * @package    OpenBuildings/timestamped-migrations
  * @author     Ivan K
+ * @copyright  (c) 2011 OpenBuildings
+ * @license    http://creativecommons.org/licenses/by-sa/3.0/legalcode
  */
 class Command_DB extends Command
 {
