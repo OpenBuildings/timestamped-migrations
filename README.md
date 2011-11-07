@@ -1,10 +1,14 @@
+# Blog Post
+
+[http://ivank.github.com/blog/2011/11/timestamped-migrations/](http://ivank.github.com/blog/2011/11/timestamped-migrations/)
+
 Migrations are a convenient way for you to alter your database in a structured and organized manner. You could edit fragments of SQL by hand but you would then be responsible for telling other developers that they need to go and run them. You’d also have to keep track of which changes need to be run against the production machines next time you deploy.
 
 Migrations module tracks which migrations have already been run so all you have to do is update your source and run ./kohana db:migrate. Migrations module will work out which migrations should be run. 
 
 Migrations also allow you to describe these transformations using PHP. The great thing about this is that it is database independent: you don’t need to worry about the precise syntax of CREATE TABLE any more than you worry about variations on SELECT * (you can drop down to raw SQL for database specific features). For example you could use SQLite3 in development, but MySQL in production.
 
-# Dependancies
+## Dependancies
 
 This module utalizes [kohana-cli](https://github.com/ivank/kohana-cli) for it's command line interface. You use your own, you can implement it with this module.
 
