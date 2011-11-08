@@ -63,13 +63,13 @@ will create a migration that looks like this
 class Create_User extends Migration
 {
 	public function up()
-	{          
-    
+	{
+		
 	}
 	
 	public function down()
-	{      
-          
+	{
+					
 	}
 }
 ?>
@@ -94,22 +94,21 @@ class Create_User extends Migration
 {
 	public function up()
 	{          
-    $this->create_table( "users", array(
-    	'title' => 'string[50]',
-    	'is_admin' => array('boolean', 'null' => false, 'default' => 0)
-	  ));
+		$this->create_table( "users", array(
+			'title' => 'string[50]',
+			'is_admin' => array('boolean', 'null' => false, 'default' => 0)
+		));
 
-	  $this->add_column("users", "email", array("string", "null" => false));
+		$this->add_column("users", "email", array("string", "null" => false));
 
-	  //
-	  $this->add_index("users", "email", "email", "fulltext");
+		$this->add_index("users", "email", "email", "fulltext");
 	}
 	
 	public function down()
-	{      
-    $this->remove_index("users", "email");
-    $this->remove_column("users", "email");
-    $this->drop_table("users");
+	{
+		$this->remove_index("users", "email");
+		$this->remove_column("users", "email");
+		$this->drop_table("users");
 	}
 }
 ?>
