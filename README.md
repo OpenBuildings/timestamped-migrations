@@ -56,6 +56,105 @@ You can generate a migration with the db:generate command which will create a fi
 
 	./kohana db:generate create_user
 
-# Footnotes 
+will create a migration that looks like this
+
+``` php
+<?php defined('SYSPATH') or die('No direct script access.');
+class Create_User extends Migration
+{
+	public function up()
+	{          
+    
+	}
+	
+	public function down()
+	{      
+          
+	}
+}
+?>
+```
+You have a bunch of helper methods that will simplify your life writing migrations.
+
+* create_table
+* rename_table
+* drop_table
+* add_column
+* remove_column
+* change_column
+* rename_column
+* add_index
+* remove_index	
+
+Here's a quick example of all of this at work
+
+``` php
+<?php defined('SYSPATH') or die('No direct script access.');
+class Create_User extends Migration
+{
+	public function up()
+	{          
+    $this->create_table( "users", array(
+    	'title' => 'string[50]',
+    	'is_admin' => array('boolean', 'null' => false, 'default' => 0)
+	  ));
+
+	  $this->add_column("users", "email", array("string", "null" => false));
+
+	  //
+	  $this->add_index("users", "email", "email", "fulltext");
+	}
+	
+	public function down()
+	{      
+    $this->remove_index("users", "email");
+    $this->remove_column("users", "email");
+    $this->drop_table("users");
+	}
+}
+?>
+```
+Available types for columns are:
+
+* decimal
+* float
+* double
+* integer
+* datetime
+* date
+* timestamp
+* time
+* text
+* string
+* binary
+* boolean
+* enum
+* tinytext
+* longtext
+* POINT
+* GEOMETRY
+* point
+
+and each column can have options like these
+
+* after - after which column to place this one
+* null - true or false
+* default
+* auto - true or false - adds autoincrement
+* unsigned - true or false
+* primary - true or false
+
+``funciton add_index($table, $index_name, $columns, $type = 'normal')``
+
+You can pass multiple columns for the indexs (as an array of column names), and available types are
+
+* normal
+* unique
+* primary
+* fulltext
+* spatial
+
+
+## Footnotes 
 A lot of this text has been taken from http://guides.rubyonrails.org/migrations.html as I've tried to mimic their functionality and interface as much as I could.
 	
