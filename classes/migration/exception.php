@@ -3,7 +3,7 @@
  * Migration exceptions.
  *
  * @package    OpenBuildings/timestamped-migrations
- * @author     Ivan K
+ * @author     Ivan Kerinerin
  * @copyright  (c) 2011 OpenBuildings Inc.
  * @license    http://creativecommons.org/licenses/by-sa/3.0/legalcode
  */
