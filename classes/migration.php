@@ -88,7 +88,8 @@ abstract class Migration
 	 */
 	public function create_table($table_name, $fields, $primary_key = TRUE, $if_not_exists = FALSE)
 	{
-		return $this->run_driver("create_table( $table_name, array(".join(", ", array_keys($fields)).") )", 'create_table', func_get_args());
+		$args = func_get_args();
+		return $this->run_driver("create_table( $table_name, array(".join(", ", array_keys($fields)).") )", 'create_table', $args);
 	}
 
 	/**
@@ -99,7 +100,8 @@ abstract class Migration
 	 */
 	public function drop_table($table_name)
 	{
-		return $this->run_driver("drop_table( $table_name )", __FUNCTION__, func_get_args());
+		$args = func_get_args();
+		return $this->run_driver("drop_table( $table_name )", __FUNCTION__, $args);
 	}
 
 	/**
@@ -111,7 +113,8 @@ abstract class Migration
 	 */
 	public function rename_table($old_name, $new_name)
 	{
-		return $this->run_driver("rename_table( $old_name, $new_name )", __FUNCTION__, func_get_args());
+		$args = func_get_args();
+		return $this->run_driver("rename_table( $old_name, $new_name )", __FUNCTION__, $args);
 	}
 	
 	/**
@@ -129,7 +132,8 @@ abstract class Migration
 	 */
 	public function add_column($table_name, $column_name, $params)
 	{
-		return $this->run_driver("add_column( $table_name, $column_name )", __FUNCTION__, func_get_args());
+		$args = func_get_args();
+		return $this->run_driver("add_column( $table_name, $column_name )", __FUNCTION__, $args);
 	}
 	
 	/**
@@ -142,7 +146,8 @@ abstract class Migration
 	 */
 	public function rename_column($table_name, $column_name, $new_column_name)
 	{
-		return $this->run_driver("rename_column( $table_name, $column_name, $new_column_name )", __FUNCTION__, func_get_args());
+		$args = func_get_args();
+		return $this->run_driver("rename_column( $table_name, $column_name, $new_column_name )", __FUNCTION__, $args);
 	}
 	
 	/**
@@ -155,7 +160,8 @@ abstract class Migration
 	 */
 	public function change_column($table_name, $column_name, $params)
 	{
-		return $this->run_driver("change_column( $table_name, $column_name )", __FUNCTION__, func_get_args());
+		$args = func_get_args();
+		return $this->run_driver("change_column( $table_name, $column_name )", __FUNCTION__, $args);
 	}
 	
 	/**
@@ -167,7 +173,8 @@ abstract class Migration
 	 */
 	public function remove_column($table_name, $column_name)
 	{
-		return $this->run_driver("remove_column( $table_name, $column_name )", __FUNCTION__, func_get_args());
+		$args = func_get_args();
+		return $this->run_driver("remove_column( $table_name, $column_name )", __FUNCTION__, $args);
 	}
 
 	/**
@@ -181,7 +188,8 @@ abstract class Migration
 	 */
 	public function add_index($table_name, $index_name, $columns, $index_type = 'normal')
 	{
-		return $this->run_driver("add_index( $table_name, $index_name, array(".join(', ',(array) $columns)."), $index_type )", __FUNCTION__, func_get_args());
+		$args = func_get_args();
+		return $this->run_driver("add_index( $table_name, $index_name, array(".join(', ',(array) $columns)."), $index_type )", __FUNCTION__, $args);
 	}
 
 	/**
@@ -193,7 +201,8 @@ abstract class Migration
 	 */
 	public function remove_index($table_name, $index_name)
 	{
-		return $this->run_driver("remove_index( $table_name, $index_name )", __FUNCTION__, func_get_args());
+		$args = func_get_args();
+		return $this->run_driver("remove_index( $table_name, $index_name )", __FUNCTION__, $args);
 	}
 	
 }
