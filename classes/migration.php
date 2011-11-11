@@ -12,6 +12,7 @@ abstract class Migration
 {
 	private $driver = null;
 	private $config = null;
+	private $dry_run = false;
 
 	abstract public function up();
 	abstract public function down();
@@ -42,11 +43,25 @@ abstract class Migration
 		}
 	}
 
+	public function dry_run($dry_run = null)
+	{
+		if( $dry_run !== null)
+		{
+			$this->dry_run = $dry_run;
+			return $this;
+		}
+
+		return $this->dry_run;
+	}
+
 	protected function run_driver($title, $method, $args)
 	{
-		$this->log("-- $title");
+		$this->log("-- $title" . ($this->dry_run ? Command::colored(" -- Dry Run", 'purple') : ''));
 		$start = microtime(TRUE);
-		call_user_func_array(array($this->driver, $method), $args);
+		if( ! $this->dry_run)
+		{
+			call_user_func_array(array($this->driver, $method), $args);
+		}
 		$end = microtime(TRUE);
 		$this->log('   --> '.number_format($end-$start, 4).'s');
 		return $this;

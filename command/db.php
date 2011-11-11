@@ -60,9 +60,12 @@ class Command_DB extends Command
 
 	protected function _migrate_up($executed, $unexecuted, $all, $arguments, $steps, &$up, &$down)
 	{
-		if(isset($arguments["version"]) AND in_array($arguments["version"], $unexecuted))
+		if(isset($arguments["version"]))
 		{
-			$up[] = $arguments["version"];
+			if(in_array($arguments["version"], $unexecuted))
+			{
+				$up[] = $arguments["version"];	
+			}
 		}
 		else
 		{
@@ -81,9 +84,12 @@ You can also give a --version and it will roll back all the migrations down to t
 
 	protected function _migrate_down($executed, $unexecuted, $all, $arguments, $steps, &$up, &$down)
 	{
-		if(isset($arguments["version"]) AND in_array($arguments["version"], $executed))
+		if(isset($arguments["version"]))
 		{
-			$down[] = $arguments["version"];
+			if(in_array($arguments["version"], $executed))
+			{
+				$down[] = $arguments["version"];	
+			}
 		}
 		else
 		{
@@ -102,9 +108,12 @@ You can also give a --version and it will roll back and up all the migrations to
 
 	protected function _migrate_redo($executed, $unexecuted, $all, $arguments, $steps, &$up, &$down)
 	{
-		if(isset($arguments["version"]) AND in_array($arguments["version"], $executed))
+		if(isset($arguments["version"]))
 		{
-			$down[] = $arguments["version"];
+			if(in_array($arguments["version"], $executed))
+			{
+				$down[] = $arguments["version"];	
+			}
 		}
 		else
 		{
@@ -131,7 +140,9 @@ You can also give a --version and it will roll back all the migrations down to t
 
 	protected function _execute_migration($func)
 	{
-		$arguments = CLI::options('version', 'step');
+		$arguments = CLI::options('version', 'step', 'dry-run');
+
+		$dry_run = array_key_exists('dry-run', $arguments);
 
 		$executed = array_reverse($this->migrations->get_executed_migrations());
 		$unexecuted = $this->migrations->get_unexecuted_migrations();
@@ -146,35 +157,46 @@ You can also give a --version and it will roll back all the migrations down to t
 
 		if( ! count($down) AND ! count($up))
 		{
-			$this->log("Nothing to do", 'green');
+			$this->log("Nothing to do", Command::OK);
 		}
 
-		foreach ($down as $version) {
+		foreach ($down as $version) 
+		{
       $migration = $this->migrations->load_migration($version);
 	
-			$this->log($version.' '.get_class($migration).' : migrating down', Command::WARNING);
+			$this->log(Command::colored($version.' '.get_class($migration).' : migrating down', Command::WARNING). ($dry_run ? Command::colored(" -- Dry Run", 'purple') : ''));
 			$start = microtime(TRUE);
 
-			$migration->down();
-			$this->migrations->set_unexecuted($version);
+			$migration->dry_run($dry_run)->down();
+
+			if( ! $dry_run)
+			{
+				$this->migrations->set_unexecuted($version);
+			}
 
 			$end = microtime(TRUE);
 			$this->log($version.' '.get_class($migration).' : migrated ('.number_format($end-$start, 4).'s)', Command::WARNING);
 		}
 		
-		foreach ($up as $version) {
+		foreach ($up as $version) 
+		{
 			$migration = $this->migrations->load_migration($version);
 
-			$this->log($version.' '.get_class($migration).' : migrating up', Command::OK);
+			$this->log(Command::colored($version.' '.get_class($migration).' : migrating up', Command::OK). ($dry_run ? Command::colored(" -- Dry Run", 'purple') : ''));
 			$start = microtime(TRUE);
 
-			$migration->up();
-			$this->migrations->set_executed($version);
+			$migration->dry_run($dry_run)->up();
+			
+			if( ! $dry_run)
+			{
+				$this->migrations->set_executed($version);
+			}			
 
 			$end = microtime(TRUE);
 			$this->log($version.' '.get_class($migration).' : migrated ('.number_format($end-$start, 4).'s)', Command::OK);
 		}
 	}
+
 	const COPY_STRUCTURE_BRIEF = "Copy structure from default DB to another";
 	const COPY_STRUCTURE_DESC = "Dump the current database structure to a temporary file and them import it to the given databse. 
 The first argument is the name of the database connection in you database config file. 
