@@ -95,6 +95,8 @@ You have a bunch of helper methods that will simplify your life writing migratio
 * remove_index	
 * change_table
 
+If you need to perform tasks specific to your database (for example create a foreign key constraint) then the execute method allows you to execute arbitrary SQL. A migration is just a regular PHP class so you’re not limited to these functions. For example after adding a column you could write code to set the value of that column for existing records (if necessary using your models).
+
 Here's a quick example of all of this at work
 
 ``` php
@@ -113,6 +115,11 @@ class Create_User extends Migration
 
 		$this->add_index("users", "latlon", "latlon", "spatial");
 		$this->add_index("users", "search", array("title", "email"), "fulltext");
+
+		$this->execute(
+			"INSERT INTO `users` (`id`, `title`, `is_admin`) VALUES(1, 'user1', 1);
+			INSERT INTO `users` (`id`, `title`, `is_admin`) VALUES(2, 'user2', 0);"
+		);		
 	}
 	
 	public function down()
