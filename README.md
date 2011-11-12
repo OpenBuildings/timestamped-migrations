@@ -54,7 +54,7 @@ Being Specific
 
 If you need to run a specific migration up or down the db:migrate:up and db:migrate:down commands will do that. Just specify the appropriate version and the corresponding migration will have its up or down method invoked, for example
 
-	./kohana db:migrate:up --version=2008090612
+	./kohana db:migrate:up --version=1321025460
 
 will run the up method from the 2008090612 migration. These commands check whether the migration has already run, so for example db:migrate:up --version=2008090612 will do nothing if Migrations module believes that --version=2008090612 has already been run.
 
