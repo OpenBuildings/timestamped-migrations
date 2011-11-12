@@ -102,12 +102,12 @@ class Migrations
 					}
 				}
 			}
-			elseif(preg_match('/^create_(.*)$/', $part, $matches))
+			elseif(preg_match('/^create_table_(.*)$/', $part, $matches))
 			{
 				$actions['up'][] = "\$this->create_table('{$matches[1]}', array( ) );";
 				$actions['down'][] = "\$this->drop_table('{$matches[1]}');";
 			}
-			elseif(preg_match('/^drop_(.*)$/', $part, $matches))
+			elseif(preg_match('/^drop_table_(.*)$/', $part, $matches))
 			{
 				$actions['up'][] = "\$this->drop_table('{$matches[1]}');";
 
@@ -137,7 +137,7 @@ class Migrations
 				$actions['up'][] = "\$this->rename_table('{$matches[1]}', '{$matches[2]}' );";
 				$actions['down'][] = "\$this->rename_table('{$matches[2]}', '{$matches[1]}' );";
 			}
-			elseif(preg_match('/^rename_column_(.*)_to_(.*)_in_(.*)$/', $part, $matches))
+			elseif(preg_match('/^rename_(.*)_to_(.*)_in_(.*)$/', $part, $matches))
 			{
 				$actions['up'][] = "\$this->rename_column('{$matches[3]}', '{$matches[1]}', '{$matches[2]}');";
 				$actions['down'][] = "\$this->rename_column('{$matches[3]}', '{$matches[2]}', '{$matches[1]}');";

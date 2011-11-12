@@ -94,19 +94,17 @@ class Create_User extends Migration
 
 There are several patterns in the filename that will be recognized and converted to actual helper methods in the up/down methods of the migration.
 
-* create_{table}
-* drop_{table}
+* create_table_{table}
+* drop_table_{table}
 * add_{columns}_to_{table} where {columns} is a list of column names, delimited by _and_ so you can write ``add_name_and_title_to_users`` - which will add both columns.
 * remove_{columns}_from_{table}
 * change_{columns}_in_{table}
 * rename_table_{old_name}_to_{new_name}
-* rename_column_{old_name}_to_{new_name}_in_{table_name}
+* rename_{old_column_name}_to_{new_column_name}_in_{table_name}
 
 You can use more than one pattern if you separate them with _also_
 
 	php kohana db:generate add_name_and_title_to_users_also_create_profiles
-
-``change_{columns}_in_{table}`` sets the current state of the columns in the down
 
 If none of the patterns match, it will just create a migration with empty up and down methods.
 
