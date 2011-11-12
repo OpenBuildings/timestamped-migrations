@@ -12,7 +12,7 @@
 class Migration_Driver_Mysql extends Migration_Driver
 {
 	protected $pdo;
-
+	
 	public function __construct($database)
 	{
 		if($database instanceof PDO)
@@ -68,8 +68,26 @@ class Migration_Driver_Mysql extends Migration_Driver
 		return $this;
 	}
 
-	public function create_table($table_name, $fields, $primary_key = TRUE, $if_not_exists = FALSE)
+	public function execute($sql, $params = null)
 	{
+		$this->pdo->prepare($sql)->execute((array) $params);
+		return $this;
+	}
+
+	public function create_table($table_name, $fields, $options = null)
+	{
+		if( is_array( $options ) )
+		{
+			$if_not_exists = Arr::get($options, 'if_not_exists');
+			$primary_key = Arr::get($options, 'primary_key', TRUE);
+			unset($options['if_not_exists'], $options['primary_key']);
+		}
+		else
+		{
+			$primary_key = $options;
+			$if_not_exists = false;
+		}
+
 		$sql = "CREATE TABLE ".($if_not_exists?'IF NOT EXISTS ':'')." `$table_name` (";
 
 		// add a default id column if we don't say not to
@@ -108,8 +126,15 @@ class Migration_Driver_Mysql extends Migration_Driver
 			$sql = rtrim($sql, ',');
 			$sql .= ')';
 		}
-		
+
 		$sql .= ")";
+
+		if ( $options )
+		{
+			foreach ($options as $name => $option) {
+				$sql .= ' '.strtoupper($name).'='.$option;	
+			}
+		}
 
 		$this->pdo->exec($sql);
 
@@ -146,6 +171,18 @@ class Migration_Driver_Mysql extends Migration_Driver
 	public function change_column($table_name, $column_name, $params)
 	{
 		$sql = "ALTER TABLE `$table_name` MODIFY " . $this->compile_column($column_name, $params);
+		$this->pdo->exec($sql);
+		return $this;
+	}
+
+	public function change_table($table_name, $options)
+	{
+		$sql = "ALTER TABLE `$table_name` ";
+		foreach( $options as $name => $option)
+		{
+			$sql .= ' '.strtoupper($name).'='.$option;
+		}
+
 		$this->pdo->exec($sql);
 		return $this;
 	}

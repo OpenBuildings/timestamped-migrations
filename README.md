@@ -48,7 +48,15 @@ Neither of these commands do anything you could not do with db:migrate, they are
 If you need to run a specific migration up or down the db:migrate:up and db:migrate:down commands will do that. Just specify the appropriate version and the corresponding migration will have its up or down method invoked, for example
 
 	./kohana db:migrate:up --version=2008090612
+
 will run the up method from the 2008090612 migration. These commands check whether the migration has already run, so for example db:migrate:up --version=2008090612 will do nothing if Migrations module believes that --version=2008090612 has already been run.
+
+## Dry Run
+
+You can add a ``--dry-run`` option and it will only show you the migrations that will be executed, without accually executing anything.
+
+	./kohana db:migrate:up --step=3 --dry-run
+
 
 ## Generating a migration
 
@@ -85,6 +93,7 @@ You have a bunch of helper methods that will simplify your life writing migratio
 * rename_column
 * add_index
 * remove_index	
+* change_table
 
 Here's a quick example of all of this at work
 
@@ -99,15 +108,19 @@ class Create_User extends Migration
 			'is_admin' => array('boolean', 'null' => false, 'default' => 0)
 		));
 
+		$this->add_column("users", "latlon", "POINT");
 		$this->add_column("users", "email", array("string", "null" => false));
 
-		$this->add_index("users", "email", "email", "fulltext");
+		$this->add_index("users", "latlon", "latlon", "spatial");
+		$this->add_index("users", "search", array("title", "email"), "fulltext");
 	}
 	
 	public function down()
 	{
-		$this->remove_index("users", "email");
+		$this->remove_index("users", "latlon");
+		$this->remove_index("users", "search");
 		$this->remove_column("users", "email");
+		$this->remove_column("users", "latlon");
 		$this->drop_table("users");
 	}
 }
@@ -142,6 +155,25 @@ and each column can have options like these
 * auto - true or false - adds autoincrement
 * unsigned - true or false
 * primary - true or false
+
+``funciton create_table($table, $fields, $options)``
+
+Options are:
+
+	* __primary_key__ - bool or string - if true will add an "id" primary key column with autoincrement. If you specified as string - will select that column for primary key. Default is TRUE.
+	* __if_not_exists__ - bool, if TRUE will add an "IF NOT EXISTS" clause
+	* all other options are passed "AS IS" to the table create options section.
+
+	//Create a table with innoDB, UTF-8 as default charset, and guid for primary key.
+	$this->create_table( "users", array(
+		'title' => 'string[50]',
+		'guid' => 'integer',
+		'is_admin' => array('boolean', 'null' => false, 'default' => 0)
+	), array (
+		'primary_key' => 'guid',
+		'engine' => 'innoDB',
+		'charset' => 'utf8'
+	));
 
 ``funciton add_index($table, $index_name, $columns, $type = 'normal')``
 

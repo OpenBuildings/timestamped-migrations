@@ -56,7 +56,7 @@ abstract class Migration
 
 	protected function run_driver($title, $method, $args)
 	{
-		$this->log("-- $title" . ($this->dry_run ? Command::colored(" -- Dry Run", 'purple') : ''));
+		$this->log("-- ".($this->dry_run ? "[dry-run]" : '')."$title");
 		$start = microtime(TRUE);
 		if( ! $this->dry_run)
 		{
@@ -65,6 +65,15 @@ abstract class Migration
 		$end = microtime(TRUE);
 		$this->log('   --> '.number_format($end-$start, 4).'s');
 		return $this;
+	}
+
+	public function execute($sql, $parmas = null)
+	{
+		$args = func_get_args();
+		$display = str_replace("\n", '↵', $sql);
+		$display = preg_replace("/[\s\t]+/", " ", $display);
+		$display = Text::limit_chars($display, 60);
+		return $this->run_driver("execute( $display )", __FUNCTION__, $args);		
 	}
 
 
@@ -96,15 +105,14 @@ abstract class Migration
 	 * @endcode
 	 * @param	string   Name of the table to be created
 	 * @param	array
-	 * @param	mixed    Primary key, false if not desired, not specified sets to 'id' column.
-	 *                   Will be set to auto_increment, serial, etc.
+	 * @param	array    array of options - 'primary_key', false if not desired, not specified sets to 'id' column. Will be set to auto_increment, serial, etc. , 'if_not_exists' - bool, and all the others will be added as options to the end of the create table clause.
 	 * @param bool if_not_exists
 	 * @return	boolean
 	 */
-	public function create_table($table_name, $fields, $primary_key = TRUE, $if_not_exists = FALSE)
+	public function create_table($table_name, $fields, $options = null)
 	{
 		$args = func_get_args();
-		return $this->run_driver("create_table( $table_name, array(".join(", ", array_keys($fields)).") )", 'create_table', $args);
+		return $this->run_driver("create_table( $table_name, array(".join(", ", array_keys($fields)).") )", __FUNCTION__, $args);
 	}
 
 	/**
@@ -117,6 +125,19 @@ abstract class Migration
 	{
 		$args = func_get_args();
 		return $this->run_driver("drop_table( $table_name )", __FUNCTION__, $args);
+	}
+
+	/**
+	 * Change table options (passed directly to alter table)
+	 * 
+	 * @param string $table_name 
+	 * @param array $options an array of options
+	 * @return boolean
+	 */
+	public function change_table($table_name, array $options)
+	{
+		$args = func_get_args();
+		return $this->run_driver("change_table( $table_name , array(".join(", ", array_keys($options))."))", __FUNCTION__, $args);
 	}
 
 	/**
