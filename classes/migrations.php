@@ -90,7 +90,16 @@ class Migrations
 			{
 				foreach (explode('_and_', $matches[1]) as $column) {
 					$actions['up'][] = "\$this->remove_column('{$matches[2]}', '$column');";
-					$actions['down'][] = "\$this->add_column('{$matches[2]}', '$column', 'string[255]');";
+
+					try{
+						$field_params = $this->driver->get_column($matches[2], $column);
+
+						$actions['down'][] = "\$this->add_column('{$matches[2]}', '$column', ".self::field_params_to_string($field_params).");";	
+					}
+					catch(Migration_Exception $e)
+					{
+						$actions['down'][] = "\$this->add_column('{$matches[2]}', '$column', 'string[255]');";	
+					}
 				}
 			}
 			elseif(preg_match('/^create_(.*)$/', $part, $matches))
