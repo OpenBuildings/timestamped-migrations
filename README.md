@@ -8,17 +8,20 @@ Migrations module tracks which migrations have already been run so all you have 
 
 Migrations also allow you to describe these transformations using PHP. The great thing about this is that it is database independent: you don’t need to worry about the precise syntax of CREATE TABLE any more than you worry about variations on SELECT * (you can drop down to raw SQL for database specific features). For example you could use SQLite3 in development, but MySQL in production.
 
-## Dependancies
+Dependancies
+------------
 
 This module utalizes [kohana-cli](https://github.com/ivank/kohana-cli) for it's command line interface. You use your own, you can implement it with this module.
 
-# Options
+Options
+-------
 
 * log - this is the logging function to be used, to integrate into whatever controller/backend you are using
 * path - the path to where the migrations will be stored, defaults to APPPATH/migrations
 * type - the driver for the backend for which migrations have been already executed as well as the migrations themselves, defaults to mysql
 
-# Command line tools
+Command line tools
+==================
 
 Kohana cli provides a set of kohana-cli commands to work with migrations which boils down to running certain sets of migrations. The very first migration related command you use will probably be db:migrate. In its most basic form it just runs the up method for all the migrations that have not yet been run. If there are no such migrations it exits.
 
@@ -28,7 +31,9 @@ If you specify a target version, Active Record will run the required migrations 
 
 If this is greater than the current version (i.e. it is migrating upwards) this will run the up method on all migrations up to and including 2008090612, if migrating downwards this will run the down method on all the migrations down to, but not including, 2008090612.
 
-## Rolling Back
+Rolling Back
+------------
+
 A common task is to rollback the last migration, for example if you made a mistake in it and wish to correct it. Rather than tracking down the version number associated with the previous migration you can run
 
 	./kohana db:rollback
@@ -44,25 +49,29 @@ The db:migrate:redo task is a shortcut for doing a rollback and then migrating b
 
 Neither of these commands do anything you could not do with db:migrate, they are simply more convenient since you do not need to explicitly specify the version to migrate to.
 
-## Being Specific
+Being Specific
+--------------
+
 If you need to run a specific migration up or down the db:migrate:up and db:migrate:down commands will do that. Just specify the appropriate version and the corresponding migration will have its up or down method invoked, for example
 
 	./kohana db:migrate:up --version=2008090612
 
 will run the up method from the 2008090612 migration. These commands check whether the migration has already run, so for example db:migrate:up --version=2008090612 will do nothing if Migrations module believes that --version=2008090612 has already been run.
 
-## Dry Run
+Dry Run
+-------
 
 You can add a ``--dry-run`` option and it will only show you the migrations that will be executed, without accually executing anything.
 
 	./kohana db:migrate:up --step=3 --dry-run
 
 
-## Generating a migration
+Generating a migration
+----------------------
 
 You can generate a migration with the db:generate command which will create a file inside the path you've specified in the config of the module. It will prefix the filename with the timestamp and return the created filename
 
-	./kohana db:generate create_user
+	./kohana db:generate create_users
 
 will create a migration that looks like this
 
@@ -72,16 +81,38 @@ class Create_User extends Migration
 {
 	public function up()
 	{
-		
+		$this->create_table('users', array( ));
 	}
 	
 	public function down()
 	{
-					
+		$this->drop_table('users');
 	}
 }
 ?>
 ```
+
+There are several patterns in the filename that will be recognized and converted to actual helper methods in the up/down methods of the migration.
+
+* create_{table}
+* drop_{table}
+* add_{columns}_to_{table} where {columns} is a list of column names, delimited by _and_ so you can write ``add_name_and_title_to_users`` - which will add both columns.
+* remove_{columns}_from_{table}
+* change_{columns}_in_{table}
+* rename_table_{old_name}_to_{new_name}
+* rename_column_{old_name}_to_{new_name}_in_{table_name}
+
+You can use more than one pattern if you separate them with _also_
+
+	php kohana db:generate add_name_and_title_to_users_also_create_profiles
+
+``change_{columns}_in_{table}`` sets the current state of the columns in the down
+
+If none of the patterns match, it will just create a migration with empty up and down methods.
+
+Helper Methods
+--------------
+
 You have a bunch of helper methods that will simplify your life writing migrations.
 
 * create_table

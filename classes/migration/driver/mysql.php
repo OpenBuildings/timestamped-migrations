@@ -298,7 +298,7 @@ class Migration_Driver_Mysql extends Migration_Driver
 		return $sql;
 	}
 	
-	protected function get_column($table_name, $column_name)
+	public function get_column($table_name, $column_name)
 	{
 		$result = $this->pdo->query("SHOW COLUMNS FROM `$table_name` LIKE '$column_name'");
 
@@ -307,7 +307,6 @@ class Migration_Driver_Mysql extends Migration_Driver
 			throw new Migration_Exception("Column :column was not found in table :table", array(':column' => $column_name, ':table' => $column_name));
 		}
 
-		
 		$result = $result->fetchObject();
 		$params = array($this->migration_type($result->Type));
 		
@@ -322,6 +321,47 @@ class Migration_Driver_Mysql extends Migration_Driver
 		
 		return $params;
 	}
+
+	public function get_table($table_name)
+	{
+		$table = new stdClass;
+		$table->name =  $table_name;
+		$table->fields = array();
+		$table->options = array();
+
+		$result = $this->pdo->query("SHOW TABLE STATUS LIKE '$table_name'");
+
+		if ($result->rowCount() !== 1)
+		{
+			throw new Migration_Exception(":table does not exist", array(':table' => $column_name));
+		}
+
+		$table->options['engine'] = $result->fetchObject()->Engine;
+
+		$fields_reuslt = $this->pdo->query("SHOW COLUMNS FROM `$table_name`");
+
+		while($result = $fields_reuslt->fetchObject())
+		{
+			$params = array($this->migration_type($result->Type));
+			
+			if ($result->Null == 'NO')
+				$params['null'] = FALSE;
+
+			if ($result->Default)
+				$params['default'] = $result->Default;
+				
+			if ($result->Extra == 'auto_increment')
+				$params['auto'] = TRUE;
+
+			if ($result->Key == 'PRI' AND $result->Field != 'id')
+				$table->options['primary_key'] = $result->Field;
+
+			if ($result->Key != 'PRI' OR $result->Field != 'id')
+				$table->fields[$result->Field] = $params;
+		}
+
+		return $table;
+	}	
 
 	protected function default_limit($type)
 	{
