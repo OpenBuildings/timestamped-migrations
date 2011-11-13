@@ -25,9 +25,9 @@ class Command_DB extends Command
 	}
 
 	const MIGRATE_BRIEF = "Execute migrations";
-	public function migrate()
+	public function migrate(Command_Options $options)
 	{
-		$this->_execute_migration('_migrate');
+		$this->_execute_migration($options, '_migrate');
 	}
 
 	protected function _migrate($executed, $unexecuted, $all, $arguments, $steps, &$up, &$down)
@@ -53,9 +53,9 @@ class Command_DB extends Command
 	}
 
 	const MIGRATE_UP_BRIEF = "Execute next up migration";
-	public function migrate_up()
+	public function migrate_up(Command_Options $options)
 	{
-		$this->_execute_migration('_migrate_up');
+		$this->_execute_migration($options, '_migrate_up');
 	}
 
 	protected function _migrate_up($executed, $unexecuted, $all, $arguments, $steps, &$up, &$down)
@@ -77,18 +77,18 @@ class Command_DB extends Command
 	const MIGRATE_DOWN_DESC = "This will run the down method from the latest migration. If you need to undo several migrations you can provide a --step option
 You can also give a --version and it will roll back all the migrations down to the specified";
 
-	public function migrate_down()
+	public function migrate_down(Command_Options $options)
 	{
-		$this->_execute_migration('_migrate_down');
+		$this->_execute_migration($options, '_migrate_down');
 	}
 
-	protected function _migrate_down($executed, $unexecuted, $all, $arguments, $steps, &$up, &$down)
+	protected function _migrate_down($executed, $unexecuted, $all, $options, $steps, &$up, &$down)
 	{
-		if(isset($arguments["version"]))
+		if(isset($options["version"]))
 		{
-			if(in_array($arguments["version"], $executed))
+			if(in_array($options["version"], $executed))
 			{
-				$down[] = $arguments["version"];	
+				$down[] = $options["version"];	
 			}
 		}
 		else
@@ -101,18 +101,18 @@ You can also give a --version and it will roll back all the migrations down to t
 	const MIGRATE_REDO_DESC = "The db:migrate:redo command is a shortcut for doing a rollback and then migrating back up again. 
 As with the db:rollback task you can use the --step option if you need to go more than one version back
 You can also give a --version and it will roll back and up all the migrations to the specified";
-	public function migrate_redo()
+	public function migrate_redo(Command_Options $options)
 	{
-		$this->_execute_migration('_migrate_redo');
+		$this->_execute_migration($options, '_migrate_redo');
 	}
 
-	protected function _migrate_redo($executed, $unexecuted, $all, $arguments, $steps, &$up, &$down)
+	protected function _migrate_redo($executed, $unexecuted, $all, $options, $steps, &$up, &$down)
 	{
-		if(isset($arguments["version"]))
+		if(isset($options["version"]))
 		{
-			if(in_array($arguments["version"], $executed))
+			if(in_array($options["version"], $executed))
 			{
-				$down[] = $arguments["version"];	
+				$down[] = $options["version"];	
 			}
 		}
 		else
@@ -133,27 +133,25 @@ You can also give a --version and it will roll back and up all the migrations to
 	const ROLLBACK_BRIEF = "Execute next down migration";
 	const ROLLBACK_DESC = "This will run the down method from the latest migration. If you need to undo several migrations you can provide a --step option
 You can also give a --version and it will roll back all the migrations down to the specified";	
-	public function rollback()
+	public function rollback(Command_Options $options)
 	{
-		$this->migrate_down();
+		$this->migrate_down($options);
 	}
 
-	protected function _execute_migration($func)
+	protected function _execute_migration(Command_Options $options, $func)
 	{
-		$arguments = CLI::options('version', 'step', 'dry-run');
-
-		$dry_run = array_key_exists('dry-run', $arguments);
+		$dry_run = $options->has('dry-run');
 
 		$executed = array_reverse($this->migrations->get_executed_migrations());
 		$unexecuted = $this->migrations->get_unexecuted_migrations();
 		$all = $this->migrations->get_migrations();
 
-		$steps = isset($arguments['step']) ? (int) $arguments['step'] : null;
+		$steps = isset($options['step']) ? (int) $options['step'] : null;
 
 		$up = array();
 		$down = array();
 
-		$this->$func($executed, $unexecuted, $all, $arguments, $steps, $up, $down);
+		$this->$func($executed, $unexecuted, $all, $options, $steps, $up, $down);
 
 		if( ! count($down) AND ! count($up))
 		{
@@ -203,7 +201,7 @@ The first argument is the name of the database connection in you database config
 Removes all the current structure of the target database. 
 It will prompt before preceeding.";
 
-	public function copy_structure($database)
+	public function copy_structure(Command_Options $options, $database)
 	{
 		$dbs = array();
 		$dbs['from'] = Kohana::$config->load('database.default.connection');
@@ -251,7 +249,7 @@ It will prompt before preceeding.";
 	}
 
 	const GENERATE_BRIEF = "Generate a migration file";
-	public function generate($name = null)
+	public function generate(Command_Options $options, $name = null)
 	{
 		if( ! $name)
 			throw new Kohana_Exception("Please set a name for the migration ( db:generate {name} )");
