@@ -60,13 +60,13 @@ class Migration_Driver_Mysql extends Migration_Driver
 
 	public function set_executed($version)
 	{
-		$this->execute("INSERT INTO schema_version SET version = ?", $version);
+		$this->execute("INSERT INTO schema_version SET version = ?", array($version));
 		return $this;
 	}
 
 	public function set_unexecuted($version)
 	{
-		$this->execute('DELETE FROM schema_version WHERE version = ?', $version);
+		$this->execute('DELETE FROM schema_version WHERE version = ?', array($version));
 		return $this;
 	}
 
@@ -74,7 +74,7 @@ class Migration_Driver_Mysql extends Migration_Driver
 	{
 		if( $params )
 		{
-			$statement = $this->pdo->prepare("INSERT INTO schema_version SET version = ?");
+			$statement = $this->pdo->prepare($sql);
 
 			$statement->execute((array) $params);
 		}
@@ -87,7 +87,7 @@ class Migration_Driver_Mysql extends Migration_Driver
 		return $this;
 	}
 
-	public function create_table($table_name, $fields, $options = null)
+	public function create_table($table_name, $fields, $options = TRUE)
 	{
 		if( is_array( $options ) )
 		{
@@ -142,7 +142,7 @@ class Migration_Driver_Mysql extends Migration_Driver
 
 		$sql .= ")";
 
-		if ( $options )
+		if ( is_array($options) )
 		{
 			foreach ($options as $name => $option) {
 				$sql .= ' '.strtoupper($name).'='.$option;	
