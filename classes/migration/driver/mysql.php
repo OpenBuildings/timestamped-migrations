@@ -36,6 +36,8 @@ class Migration_Driver_Mysql extends Migration_Driver
 				$database['connection']['password']
 			);
 		}
+
+		$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 	}
 
 	public function generate_schema()
@@ -74,17 +76,12 @@ class Migration_Driver_Mysql extends Migration_Driver
 		{
 			$statement = $this->pdo->prepare("INSERT INTO schema_version SET version = ?");
 
-			if( ! $statement )
-				throw new Kohana_Exception("Mysql Error: :info", array(":info" => $this->pdo->errorInfo()));
-
 			$statement->execute((array) $params);
 		}
 		else
 		{
 			$result = $this->pdo->exec($sql);
 
-			if( ! $result )
-				throw new Kohana_Exception("Mysql Error: :info", array(":info" => $this->pdo->errorInfo()));
 		}
 
 		return $this;
