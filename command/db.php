@@ -207,6 +207,9 @@ It will prompt before preceeding.";
 		$dbs['from'] = Kohana::$config->load('database.default.connection');
 		$dbs['to'] = Kohana::$config->load("database.$database.connection");
 
+		if ( ! $dbs['to'])
+			throw new Kohana_Exception("Database :database does not exist, available databases are :databases", array(":database" => $database, ":databases" => join(', ', array_keys((array) Kohana::$config->load("database")))));
+
 		foreach($dbs as &$db)
 		if( ! isset($db['database']) )
 		{
