@@ -81,14 +81,16 @@ class Migrations
 		{
 			if(preg_match('/^add_(.*)_to_(.*)$/', $part, $matches))
 			{
-				foreach (explode('_and_', $matches[1]) as $column) {
+				foreach (explode('_and_', $matches[1]) as $column) 
+				{
 					$actions['up'][] = "\$this->add_column('{$matches[2]}', '$column', 'string[255]');";
 					$actions['down'][] = "\$this->remove_column('{$matches[2]}', '$column');";
 				}
 			}
 			elseif(preg_match('/^remove_(.*)_from_(.*)$/', $part, $matches))
 			{
-				foreach (explode('_and_', $matches[1]) as $column) {
+				foreach (explode('_and_', $matches[1]) as $column) 
+				{
 					$actions['up'][] = "\$this->remove_column('{$matches[2]}', '$column');";
 
 					try{
@@ -104,32 +106,38 @@ class Migrations
 			}
 			elseif(preg_match('/^create_table_(.*)$/', $part, $matches))
 			{
-				$actions['up'][] = "\$this->create_table('{$matches[1]}', array( ) );";
-				$actions['down'][] = "\$this->drop_table('{$matches[1]}');";
+				foreach (explode('_and_', $matches[1]) as $table_name) 
+				{
+					$actions['up'][] = "\$this->create_table('{$table_name}', array( ) );";
+					$actions['down'][] = "\$this->drop_table('{$table_name}');";
+				}
 			}
 			elseif(preg_match('/^drop_table_(.*)$/', $part, $matches))
 			{
-				$actions['up'][] = "\$this->drop_table('{$matches[1]}');";
-
-				try{
-					$table = $this->driver->get_table($matches[1]);
-					$fields = array();
-					$options = array();
-					foreach($table->fields as $name => $field_params)
-					{
-						$fields[] = "\n\t\t\t'$name' => ".self::field_params_to_string($field_params);
-					}
-
-					foreach($table->options as $name => $option)
-					{
-						$options[] = "'$name' => '$option'";
-					}
-
-					$actions['down'][] = "\$this->create_table('{$table->name}', array( ".join(',', $fields)." \n\t\t), array( ".join(',', $options)." )); ";	
-				}
-				catch(Migration_Exception $e)
+				foreach (explode('_and_', $matches[1]) as $table_name) 
 				{
-					$actions['down'][] = "\$this->create_table('{$matches[1]}', array( ) );";
+					$actions['up'][] = "\$this->drop_table('{$table_name}');";
+
+					try{
+						$table = $this->driver->get_table($table_name);
+						$fields = array();
+						$options = array();
+						foreach($table->fields as $name => $field_params)
+						{
+							$fields[] = "\n\t\t\t'$name' => ".self::field_params_to_string($field_params);
+						}
+
+						foreach($table->options as $name => $option)
+						{
+							$options[] = "'$name' => '$option'";
+						}
+
+						$actions['down'][] = "\$this->create_table('{$table->name}', array( ".join(',', $fields)." \n\t\t), array( ".join(',', $options)." )); ";	
+					}
+					catch(Migration_Exception $e)
+					{
+						$actions['down'][] = "\$this->create_table('{$table_name}', array( ) );";
+					}
 				}
 			}
 			elseif(preg_match('/^rename_table_(.*)_to_(.*)$/', $part, $matches))
