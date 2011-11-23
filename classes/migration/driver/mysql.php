@@ -47,6 +47,11 @@ class Migration_Driver_Mysql extends Migration_Driver
 		return $this;
 	}
 
+	public function get_tables($value='')
+	{
+		return Arr::pluck($this->pdo->query('SHOW TABLES'), '0');
+	}
+
 	public function get_executed_migrations()
 	{
 		$migrations = array();

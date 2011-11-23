@@ -51,6 +51,14 @@ class Migrations
 		$this->driver->set_unexecuted($version);
 	}
 
+	public function delete_tables()
+	{
+		foreach ($this->driver->get_tables() as $table) 
+		{
+			$this->driver->drop_table($table);	
+		}
+		$this->driver->generate_schema();
+	}
 	
 	public function generate_new_migration_file($name)
 	{

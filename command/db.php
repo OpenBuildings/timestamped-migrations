@@ -195,6 +195,40 @@ You can also give a --version and it will roll back all the migrations down to t
 		}
 	}
 
+	const RECREATE_BRIEF = "Drop all tables and re-run all migrations";
+	const RECREATE_DESC = "This will drop all existing tables, removing all the data, and then recreate the database by runing up all the migrations. Will prompt before preceding, or if you pass --force will preceed without prompting.";	
+
+	public function recreate(Command_Options $options)
+	{
+		if( ! $options->has('force') )
+		{
+			$this->log("This will destroy all data in the current database. Are you sure? [yes/NO]", Command::WARNING);
+			$input = strtolower(trim(fgets(STDIN)));
+		}
+		else
+		{
+			$input = 'yes';
+		}
+
+		if($input == 'yes')
+		{
+			$dry_run = $options->has('dry-run');
+
+			$this->log(Command::colored('dropping tables', Command::OK). ($dry_run ? Command::colored(" -- Dry Run", 'purple') : ''));
+
+			if( ! $dry_run)
+			{
+				$this->migrations->delete_tables();
+			}
+
+			$this->migrate($options);
+		}
+		else
+		{
+			$this->log("Nothing done", Command::WARNING);
+		}		
+	}
+
 	const COPY_STRUCTURE_BRIEF = "Copy structure from default DB to another";
 	const COPY_STRUCTURE_DESC = "Dump the current database structure to a temporary file and them import it to the given databse. 
 The first argument is the name of the database connection in you database config file. 
