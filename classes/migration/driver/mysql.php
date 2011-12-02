@@ -218,7 +218,7 @@ class Migration_Driver_Mysql extends Migration_Driver
 		{
 			case 'normal':   $type = 'INDEX'; break;
 			case 'unique':   $type = 'UNIQUE INDEX'; break;
-			case 'primary':  $type = 'PRIMARY INDEX'; break;
+			case 'primary':  $type = 'PRIMARY KEY'; break;
 			case 'fulltext':  $type = 'FULLTEXT'; break;
 			case 'spatial':  $type = 'SPATIAL'; break;
 			
