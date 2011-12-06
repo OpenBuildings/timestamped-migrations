@@ -60,12 +60,22 @@ class Migrations
 		$this->driver->generate_schema();
 	}
 	
-	public function generate_new_migration_file($name)
+	public function generate_new_migration_file($name, $template)
 	{
-		$actions = $this->actions_from_string($name);
+		if( $template )
+		{
+			$actions = explode('--- DOWN ---', file_get_contents(getcwd().DIRECTORY_SEPARATOR.$template));
 
-		$up = join("\n", array_map('Migrations::indent', $actions['up']));
-		$down = join("\n", array_map('Migrations::indent', $actions['down']));
+			$up = join("\n", array_map('Migrations::indent', array_filter(explode("\n", $actions[0]))));
+			$down = join("\n", array_map('Migrations::indent', array_filter(explode("\n", $actions[1]))));
+		}
+		else
+		{
+			$actions = $this->actions_from_string($name);
+
+			$up = join("\n", array_map('Migrations::indent', $actions['up']));
+			$down = join("\n", array_map('Migrations::indent', $actions['down']));
+		}
 
 		$template = file_get_contents(Kohana::find_file('templates', 'migration', 'tpl'));
 		$class_name = str_replace(' ','_',ucwords(str_replace('_',' ',$name)));

@@ -291,7 +291,11 @@ It will prompt before preceeding.";
 		if( ! $name)
 			throw new Kohana_Exception("Please set a name for the migration ( db:generate {name} )");
 
-		self::log(self::colored($this->migrations->generate_new_migration_file($name), Command::OK).self::colored(' Migration File Generated', Command::WARNING));
+		$template = $options->has('template') ? $options['template'] : null;
+
+		$migration = $this->migrations->generate_new_migration_file($name, $template);
+
+		self::log(self::colored($migration, Command::OK).self::colored(' Migration File Generated', Command::WARNING));
 	}
 
 }
