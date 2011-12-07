@@ -2,16 +2,16 @@
 
 [http://ivank.github.com/blog/2011/11/timestamped-migrations/](http://ivank.github.com/blog/2011/11/timestamped-migrations/)
 
-Migrations are a convenient way for you to alter your database in a structured and organized manner. You could edit fragments of SQL by hand but you would then be responsible for telling other developers that they need to go and run them. You’d also have to keep track of which changes need to be run against the production machines next time you deploy.
+Migrations are a convenient way for you to alter your database in a structured and organized manner. You could edit fragments of SQL by hand but you would then be responsible for telling other developers that they need to go and run them. You'd also have to keep track of which changes need to be run against the production machines next time you deploy.
 
 Migrations module tracks which migrations have already been run so all you have to do is update your source and run ./kohana db:migrate. Migrations module will work out which migrations should be run. 
 
-Migrations also allow you to describe these transformations using PHP. The great thing about this is that it is database independent: you don’t need to worry about the precise syntax of CREATE TABLE any more than you worry about variations on SELECT * (you can drop down to raw SQL for database specific features). For example you could use SQLite3 in development, but MySQL in production.
+Migrations also allow you to describe these transformations using PHP. The great thing about this is that it is database independent: you don't need to worry about the precise syntax of CREATE TABLE any more than you worry about variations on SELECT * (you can drop down to raw SQL for database specific features). For example you could use SQLite3 in development, but MySQL in production.
 
-Dependancies
+Dependencies
 ------------
 
-This module utalizes [kohana-cli](https://github.com/ivank/kohana-cli) for it's command line interface. You use your own, you can implement it with this module.
+This module utilizes [kohana-cli](https://github.com/ivank/kohana-cli) for it's command line interface. You use your own, you can implement it with this module.
 
 Options
 -------
@@ -25,9 +25,9 @@ Command line tools
 
 Kohana cli provides a set of kohana-cli commands to work with migrations which boils down to running certain sets of migrations. The very first migration related command you use will probably be db:migrate. In its most basic form it just runs the up method for all the migrations that have not yet been run. If there are no such migrations it exits.
 
-If you specify a target version, Active Record will run the required migrations (up or down) until it has reached the specified version. The version is the numerical prefix on the migration’s filename. For example to migrate to version 2008090612 run
+If you specify a target version, Active Record will run the required migrations (up or down) until it has reached the specified version. The version is the numerical prefix on the migration’s filename. For example to migrate to version 1322837510 run
 
-	./kohana db:migrate --version=2008090612
+	./kohana db:migrate --version=1322837510
 
 If this is greater than the current version (i.e. it is migrating upwards) this will run the up method on all migrations up to and including 2008090612, if migrating downwards this will run the down method on all the migrations down to, but not including, 2008090612.
 
@@ -56,7 +56,7 @@ If you need to run a specific migration up or down the db:migrate:up and db:migr
 
 	./kohana db:migrate:up --version=1321025460
 
-will run the up method from the 2008090612 migration. These commands check whether the migration has already run, so for example db:migrate:up --version=2008090612 will do nothing if Migrations module believes that --version=2008090612 has already been run.
+will run the up method from the 2008090612 migration. These commands check whether the migration has already run, so for example db:migrate:up --version=2008090612 will do nothing if Migrations module believes that --version=1321025460 has already been run.
 
 Dry Run
 -------
@@ -124,7 +124,7 @@ You have a bunch of helper methods that will simplify your life writing migratio
 * remove_index	
 * change_table
 
-If you need to perform tasks specific to your database (for example create a foreign key constraint) then the execute method allows you to execute arbitrary SQL. A migration is just a regular PHP class so you’re not limited to these functions. For example after adding a column you could write code to set the value of that column for existing records (if necessary using your models).
+If you need to perform tasks specific to your database (for example create a foreign key constraint) then the execute method allows you to execute arbitrary SQL. A migration is just a regular PHP class so you're not limited to these functions. For example after adding a column you could write code to set the value of that column for existing records (if necessary using your models).
 
 Here's a quick example of all of this at work
 
@@ -192,7 +192,7 @@ and each column can have options like these
 * unsigned - true or false
 * primary - true or false
 
-``funciton create_table($table, $fields, $options)``
+``function create_table($table, $fields, $options)``
 
 Options are:
 
@@ -211,7 +211,7 @@ Options are:
 		'charset' => 'utf8'
 	));
 
-``funciton add_index($table, $index_name, $columns, $type = 'normal')``
+``function add_index($table, $index_name, $columns, $type = 'normal')``
 
 You can pass multiple columns for the indexs (as an array of column names), and available types are
 
@@ -224,4 +224,27 @@ You can pass multiple columns for the indexs (as an array of column names), and 
 
 ## Footnotes 
 A lot of this text has been taken from http://guides.rubyonrails.org/migrations.html as I've tried to mimic their functionality and interface as much as I could.
+
+Templates
+---------
+
+You can create a template to be used as a basis for generating a migration. This is useful if you want to bundle migrations with other modules. A migration template is just a text file with a "--- DOWN ---" line in it. everything above it is placed in the "up" method, everything below - in the "down"
+
+Example:
+
+	$this->add_column('users', 'facebook_uid', 'string[100]');
+	$this->add_index('users', 'facebook_uid_index', 'facebook_uid');
+
+	--- DOWN ---
+
+	$this->remove_column('users', 'facebook_uid');
+	$this->remove_index('users', 'facebook_uid_index');
+
+And then:
+
+	php kohana db:generate add_facebook_id --template=<path to template file>
+
+And you're done. If you use the --template option, all the name patters are of course ignored.
+
+
 	
