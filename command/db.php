@@ -254,9 +254,15 @@ It will prompt before preceeding.";
 		}
 		$file = tempnam(sys_get_temp_dir(), "Database_");
 		
-		$this->log("This will destroy database ".$dbs['to']['database']."Are you sure? [yes/NO]", Command::WARNING);
-
-		$input = strtolower(trim(fgets(STDIN))); 
+		if( ! $options->has('force') )
+		{
+			$this->log("This will destroy database ".$dbs['to']['database']."Are you sure? [yes/NO]", Command::WARNING);
+			$input = strtolower(trim(fgets(STDIN)));
+		}
+		else
+		{
+			$input = 'yes';
+		}
 
 		if($input == 'yes')
 		{
