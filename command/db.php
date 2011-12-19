@@ -157,42 +157,47 @@ You can also give a --version and it will roll back all the migrations down to t
 		{
 			$this->log("Nothing to do", Command::OK);
 		}
-
-		foreach ($down as $version) 
+		else
 		{
-      $migration = $this->migrations->load_migration($version);
-	
-			$this->log(Command::colored($version.' '.get_class($migration).' : migrating down', Command::WARNING). ($dry_run ? Command::colored(" -- Dry Run", 'purple') : ''));
-			$start = microtime(TRUE);
-
-			$migration->dry_run($dry_run)->down();
-
-			if( ! $dry_run)
+			foreach ($down as $version) 
 			{
-				$this->migrations->set_unexecuted($version);
+	      $migration = $this->migrations->load_migration($version);
+		
+				$this->log(Command::colored($version.' '.get_class($migration).' : migrating down', Command::WARNING). ($dry_run ? Command::colored(" -- Dry Run", 'purple') : ''));
+				$start = microtime(TRUE);
+
+				$migration->dry_run($dry_run)->down();
+
+				if( ! $dry_run)
+				{
+					$this->migrations->set_unexecuted($version);
+				}
+
+				$end = microtime(TRUE);
+				$this->log($version.' '.get_class($migration).' : migrated ('.number_format($end-$start, 4).'s)', Command::WARNING);
+			}
+			
+			foreach ($up as $version) 
+			{
+				$migration = $this->migrations->load_migration($version);
+
+				$this->log(Command::colored($version.' '.get_class($migration).' : migrating up', Command::OK). ($dry_run ? Command::colored(" -- Dry Run", 'purple') : ''));
+				$start = microtime(TRUE);
+
+				$migration->dry_run($dry_run)->up();
+				
+				if( ! $dry_run)
+				{
+					$this->migrations->set_executed($version);
+				}			
+
+				$end = microtime(TRUE);
+				$this->log($version.' '.get_class($migration).' : migrated ('.number_format($end-$start, 4).'s)', Command::OK);
 			}
 
-			$end = microtime(TRUE);
-			$this->log($version.' '.get_class($migration).' : migrated ('.number_format($end-$start, 4).'s)', Command::WARNING);
+			$this->structure_dump();			
 		}
-		
-		foreach ($up as $version) 
-		{
-			$migration = $this->migrations->load_migration($version);
 
-			$this->log(Command::colored($version.' '.get_class($migration).' : migrating up', Command::OK). ($dry_run ? Command::colored(" -- Dry Run", 'purple') : ''));
-			$start = microtime(TRUE);
-
-			$migration->dry_run($dry_run)->up();
-			
-			if( ! $dry_run)
-			{
-				$this->migrations->set_executed($version);
-			}			
-
-			$end = microtime(TRUE);
-			$this->log($version.' '.get_class($migration).' : migrated ('.number_format($end-$start, 4).'s)', Command::OK);
-		}
 	}
 
 	const RECREATE_BRIEF = "Drop all tables and re-run all migrations";
@@ -229,22 +234,10 @@ You can also give a --version and it will roll back all the migrations down to t
 		}		
 	}
 
-	const COPY_STRUCTURE_BRIEF = "Copy structure from default DB to another";
-	const COPY_STRUCTURE_DESC = "Dump the current database structure to a temporary file and them import it to the given databse. 
-The first argument is the name of the database connection in you database config file. 
-Removes all the current structure of the target database. 
-It will prompt before preceeding.";
-
-	public function copy_structure(Command_Options $options, $database)
+	static private function _db_params($type)
 	{
-		$dbs = array();
-		$dbs['from'] = Kohana::$config->load('database.default.connection');
-		$dbs['to'] = Kohana::$config->load("database.$database.connection");
+		$db = Kohana::$config->load("database.$type.connection");	
 
-		if ( ! $dbs['to'])
-			throw new Kohana_Exception("Database :database does not exist, available databases are :databases", array(":database" => $database, ":databases" => join(', ', array_keys((array) Kohana::$config->load("database")))));
-
-		foreach($dbs as &$db)
 		if( ! isset($db['database']) )
 		{
 			$matches = array();
@@ -252,11 +245,37 @@ It will prompt before preceeding.";
 				throw new Kohana_Exception("Error connecting to database, database missing");
 			$db['database'] = $matches[1];
 		}
-		$file = tempnam(sys_get_temp_dir(), "Database_");
-		
+
+		return $db;
+	}
+
+	const STRUCTURE_DUMP_BRIEF = "Dump sql schema.sql file";
+	const STRUCTURE_DUMP_DESC = "Dump sql schema.sql file";
+
+	public function structure_dump(Command_Options $options, $database = null)
+	{
+		$db = self::_db_params($database ? $database : 'default');
+
+		$file = Kohana::$config->load("migrations.path").DIRECTORY_SEPARATOR.'schema.sql';	
+
+		$this->log_func("system", array(strtr("mysqldump -u:username -p:password --add-drop-database --add-drop-table --no-data :database > :file ", array(
+			':username' => $db['username'],
+			':password' => $db['password'],
+			':database' => $db['database'],
+			':file'      => $file
+		))), Command::OK, "Saving structure ".$db['database']." to ".Debug::path($file));
+	}
+
+	const STRUCTURE_LOAD_BRIEF = "Load information to database from the schema.sql file";
+	const STRUCTURE_LOAD_DESC = "Load sql file, prompts before execution, can pass --force to skip";
+
+	public function structure_load(Command_Options $options, $database = null)
+	{
+		$db = self::_db_params($database ? $database : 'default');
+
 		if( ! $options->has('force') )
 		{
-			$this->log("This will destroy database ".$dbs['to']['database']."Are you sure? [yes/NO]", Command::WARNING);
+			$this->log("This will destroy database ".$db['database']."Are you sure? [yes/NO]", Command::WARNING);
 			$input = strtolower(trim(fgets(STDIN)));
 		}
 		else
@@ -264,31 +283,27 @@ It will prompt before preceeding.";
 			$input = 'yes';
 		}
 
-		if($input == 'yes')
+		if( $input == 'yes')
 		{
-			$this->log("Dumping current structure to $file", Command::OK);
-			system(strtr("mysqldump -u:username -p:password --add-drop-database --add-drop-table --no-data :database > :tmp ", array(
-				':username' => $dbs['from']['username'],
-				':password' => $dbs['from']['password'],
-				':database' => $dbs['from']['database'],
-				':tmp'      => $file
-			)));
+			$file = Kohana::$config->load("migrations.path").DIRECTORY_SEPARATOR.'schema.sql';	
 
-			$this->log("Importing structure from $file to ".$dbs['to']['database'], Command::OK);
-			system(strtr("mysql -u:username -p:password :database < :tmp ", array(
-				':username' => $dbs['to']['username'],
-				':password' => $dbs['to']['password'],
-				':database' => $dbs['to']['database'],
-				':tmp'      => $file
-			)));
+			$this->log_func("system", array(strtr("mysql -u:username -p:password :database < :file ", array(
+				':username' => $db['username'],
+				':password' => $db['password'],
+				':database' => $db['database'],
+				':file'      => $file
+			))), Command::OK, "Loading data from ".Debug::path($file)." to ".$db['database']);
+		}
+	}
 
-			$this->log("removing $file", Command::OK);
-			unlink($file);
-		}
-		else
-		{
-			$this->log("Nothing done", Command::WARNING);
-		}
+
+	const STRUCTURE_COPY_BRIEF = "Copy structure from default DB to another";
+	const STRUCTURE_COPY_DESC = "This basically executes db:structure:dump and db:structure:load sequentialy";
+
+	public function structure_copy(Command_Options $options, $database)
+	{
+		$this->structure_dump($options);
+		$this->structure_dump($database);
 	}
 
 	const GENERATE_BRIEF = "Generate a migration file";
