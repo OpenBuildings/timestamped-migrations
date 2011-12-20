@@ -195,7 +195,7 @@ You can also give a --version and it will roll back all the migrations down to t
 				$this->log($version.' '.get_class($migration).' : migrated ('.number_format($end-$start, 4).'s)', Command::OK);
 			}
 
-			$this->structure_dump();			
+			$this->structure_dump($options);			
 		}
 
 	}
