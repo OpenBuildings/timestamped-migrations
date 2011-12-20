@@ -76,7 +76,7 @@ You can generate a migration with the db:generate command which will create a fi
 will create a migration that looks like this
 
 ``` php
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 class Create_User extends Migration
 {
 	public function up()
@@ -129,7 +129,7 @@ If you need to perform tasks specific to your database (for example create a for
 Here's a quick example of all of this at work
 
 ``` php
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 class Create_User extends Migration
 {
 	public function up()
