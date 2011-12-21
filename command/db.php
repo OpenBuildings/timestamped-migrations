@@ -10,7 +10,7 @@
  */
 class Command_DB extends Command
 {
-	protected $migrations = null;
+	protected $migrations = NULL;
 
 	public function __construct()
 	{
@@ -146,7 +146,7 @@ You can also give a --version and it will roll back all the migrations down to t
 		$unexecuted = $this->migrations->get_unexecuted_migrations();
 		$all = $this->migrations->get_migrations();
 
-		$steps = isset($options['step']) ? (int) $options['step'] : null;
+		$steps = isset($options['step']) ? (int) $options['step'] : NULL;
 
 		$up = array();
 		$down = array();
@@ -252,7 +252,7 @@ You can also give a --version and it will roll back all the migrations down to t
 	const STRUCTURE_DUMP_BRIEF = "Dump sql schema.sql file";
 	const STRUCTURE_DUMP_DESC = "Dump sql schema.sql file";
 
-	public function structure_dump(Command_Options $options, $database = null)
+	public function structure_dump(Command_Options $options, $database = NULL)
 	{
 		$db = self::_db_params($database ? $database : 'default');
 
@@ -269,7 +269,7 @@ You can also give a --version and it will roll back all the migrations down to t
 	const STRUCTURE_LOAD_BRIEF = "Load information to database from the schema.sql file";
 	const STRUCTURE_LOAD_DESC = "Load sql file, prompts before execution, can pass --force to skip";
 
-	public function structure_load(Command_Options $options, $database = null)
+	public function structure_load(Command_Options $options, $database = NULL)
 	{
 		$db = self::_db_params($database ? $database : 'default');
 
@@ -307,12 +307,12 @@ You can also give a --version and it will roll back all the migrations down to t
 	}
 
 	const GENERATE_BRIEF = "Generate a migration file";
-	public function generate(Command_Options $options, $name = null)
+	public function generate(Command_Options $options, $name = NULL)
 	{
 		if( ! $name)
 			throw new Kohana_Exception("Please set a name for the migration ( db:generate {name} )");
 
-		$template = $options->has('template') ? $options['template'] : null;
+		$template = $options->has('template') ? $options['template'] : NULL;
 
 		$migration = $this->migrations->generate_new_migration_file($name, $template);
 
