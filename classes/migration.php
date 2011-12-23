@@ -17,6 +17,7 @@ abstract class Migration
 	abstract public function up();
 	abstract public function down();
 
+
 	public function __construct($config = null)
 	{
 		$this->config = arr::merge(Kohana::$config->load('migrations')->as_array(), (array) $config);
@@ -26,13 +27,32 @@ abstract class Migration
 		// Set the driver class name
 		$driver = 'Migration_Driver_'.ucfirst($database['type']);
 
+		if ( ! class_exists($driver))
+			throw new Migration_Exception("Driver :type does not exist (class :driver)", array(':type' => $database['type'], ':driver' => $driver));
+
 		// Create the database connection instance
-		$this->driver = new $driver(Arr::get(Kohana::$config->load('migrations'), 'database', 'default'));		
+		$this->driver(new $driver(Arr::get(Kohana::$config->load('migrations'), 'database', 'default')));
+	}
+
+	/**
+	 * Get or set the current driver
+	 */
+	public function driver(Migration_Driver $driver = NULL)
+	{
+		if ($driver == NULL)
+		{
+			return $this->driver;
+		}
+		else 
+		{
+			$this->driver = $driver;
+		}
+		return $this;
 	}
 
 	public function log($message)
 	{
-		if($this->config['log'])
+		if ($this->config['log'])
 		{
 			call_user_func($this->config['log'], $message);
 		}
@@ -43,9 +63,9 @@ abstract class Migration
 		}
 	}
 
-	public function dry_run($dry_run = null)
+	public function dry_run($dry_run = NULL)
 	{
-		if( $dry_run !== null)
+		if ($dry_run !== NULL)
 		{
 			$this->dry_run = $dry_run;
 			return $this;
@@ -58,7 +78,8 @@ abstract class Migration
 	{
 		$this->log("-- ".($this->dry_run ? "[dry-run]" : '')."$title");
 		$start = microtime(TRUE);
-		if( ! $this->dry_run)
+
+		if ( ! $this->dry_run)
 		{
 			call_user_func_array(array($this->driver, $method), $args);
 		}
@@ -67,7 +88,7 @@ abstract class Migration
 		return $this;
 	}
 
-	public function execute($sql, $parmas = null)
+	public function execute($sql, $parmas = NULL)
 	{
 		$args = func_get_args();
 		$display = str_replace("\n", '↵', $sql);
@@ -109,7 +130,7 @@ abstract class Migration
 	 * @param bool if_not_exists
 	 * @return	boolean
 	 */
-	public function create_table($table_name, $fields, $options = null)
+	public function create_table($table_name, $fields, $options = NULL)
 	{
 		$args = func_get_args();
 		return $this->run_driver("create_table( $table_name, array(".join(", ", array_keys($fields)).") )", __FUNCTION__, $args);

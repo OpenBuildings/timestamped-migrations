@@ -51,8 +51,10 @@ abstract class Migration_Driver
 	abstract public function get_executed_migrations();
 	abstract public function set_executed($version);
 	abstract public function set_unexecuted($version);
+	abstract public function clear_migrations();	
 	abstract public function create_table($table_name, $fields, $primary_key = TRUE);
 	abstract public function drop_table($table_name);
+	abstract public function change_table($table_name, $options);
 	abstract public function rename_table($old_name, $new_name);
 	abstract public function add_column($table_name, $column_name, $params);
 	abstract public function rename_column($table_name, $column_name, $new_column_name);

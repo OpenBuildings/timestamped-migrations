@@ -11,7 +11,7 @@
  */
 class Migration_Driver_Mysql extends Migration_Driver
 {
-	protected $pdo;
+	public $pdo;
 	
 	public function __construct($database)
 	{
@@ -75,7 +75,13 @@ class Migration_Driver_Mysql extends Migration_Driver
 		return $this;
 	}
 
-	public function execute($sql, $params = null)
+	public function clear_migrations()
+	{
+		$this->execute('DELETE FROM schema_version');
+		return $this;
+	}
+
+	public function execute($sql, $params = NULL)
 	{
 		if( $params )
 		{
@@ -106,7 +112,7 @@ class Migration_Driver_Mysql extends Migration_Driver
 			$if_not_exists = false;
 		}
 
-		$sql = "CREATE TABLE ".($if_not_exists?'IF NOT EXISTS ':'')." `$table_name` (";
+		$sql = "CREATE TABLE ".($if_not_exists?'IF NOT EXISTS ':'')."`$table_name` (";
 
 		// add a default id column if we don't say not to
 		if ($primary_key === TRUE)
@@ -167,7 +173,7 @@ class Migration_Driver_Mysql extends Migration_Driver
 
 	public function rename_table($old_name, $new_name)
 	{
-		$this->execute("RENAME TABLE `$old_name`  TO `$new_name` ;");
+		$this->execute("RENAME TABLE `$old_name` TO `$new_name`");
 		return $this;
 	}
 	
@@ -207,7 +213,7 @@ class Migration_Driver_Mysql extends Migration_Driver
 	
 	public function remove_column($table_name, $column_name)
 	{
-		$this->execute("ALTER TABLE `$table_name` DROP COLUMN `$column_name` ;");
+		$this->execute("ALTER TABLE `$table_name` DROP COLUMN `$column_name`");
 
 		return $this;
 	}
@@ -244,7 +250,7 @@ class Migration_Driver_Mysql extends Migration_Driver
 		return $this;
 	}
 	
-	protected function compile_column($field_name, $params, $allow_order = FALSE)
+	public function compile_column($field_name, $params, $allow_order = FALSE)
 	{
 		if (empty($params))
 			throw new Migration_Exception("Parameters must not be empty");
@@ -318,9 +324,16 @@ class Migration_Driver_Mysql extends Migration_Driver
 	
 	public function get_column($table_name, $column_name)
 	{
-		$result = $this->pdo->query("SHOW COLUMNS FROM `$table_name` LIKE '$column_name'");
+		try 
+		{
+			$result = $this->pdo->query("SHOW COLUMNS FROM `$table_name` LIKE '$column_name'");
+		} 
+		catch (PDOException $e) 
+		{
+			$result = NULL;
+		}
 
-		if ($result->rowCount() !== 1)
+		if ( ! $result OR $result->rowCount() !== 1)
 		{
 			throw new Migration_Exception("Column :column was not found in table :table", array(':column' => $column_name, ':table' => $column_name));
 		}
@@ -329,13 +342,19 @@ class Migration_Driver_Mysql extends Migration_Driver
 		$params = array($this->migration_type($result->Type));
 		
 		if ($result->Null == 'NO')
+		{
 			$params['null'] = FALSE;
+		}
 
 		if ($result->Default)
+		{
 			$params['default'] = $result->Default;
+		}
 			
 		if ($result->Extra == 'auto_increment')
+		{
 			$params['auto'] = TRUE;
+		}
 		
 		return $params;
 	}
@@ -351,7 +370,7 @@ class Migration_Driver_Mysql extends Migration_Driver
 
 		if ($result->rowCount() !== 1)
 		{
-			throw new Migration_Exception(":table does not exist", array(':table' => $column_name));
+			throw new Migration_Exception(":table does not exist", array(':table' => $table_name));
 		}
 
 		$table->options['engine'] = $result->fetchObject()->Engine;
@@ -363,19 +382,29 @@ class Migration_Driver_Mysql extends Migration_Driver
 			$params = array($this->migration_type($result->Type));
 			
 			if ($result->Null == 'NO')
+			{
 				$params['null'] = FALSE;
-
+			}
+				
 			if ($result->Default)
+			{
 				$params['default'] = $result->Default;
+			}
 				
 			if ($result->Extra == 'auto_increment')
+			{
 				$params['auto'] = TRUE;
+			}				
 
 			if ($result->Key == 'PRI' AND $result->Field != 'id')
+			{
 				$table->options['primary_key'] = $result->Field;
+			}
 
 			if ($result->Key != 'PRI' OR $result->Field != 'id')
+			{
 				$table->fields[$result->Field] = $params;
+			}
 		}
 
 		return $table;
@@ -437,10 +466,10 @@ class Migration_Driver_Mysql extends Migration_Driver
 			case 'smallint': return 'integer[small]';
 			case 'int':      return 'integer';
 			case 'varchar':  return "string[$limit]";
-			case 'char':  return "string[$limit]";
+			case 'char':     return "string[$limit]";
 			case 'tinyint':  return 'boolean';
 			case 'float':    return 'float';
-			case 'double':    return 'double';
+			case 'double':   return 'double';
 			case 'point':    return 'point';
 			default: break;
 		}
