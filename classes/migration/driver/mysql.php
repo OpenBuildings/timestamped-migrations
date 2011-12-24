@@ -109,7 +109,7 @@ class Migration_Driver_Mysql extends Migration_Driver
 
 		if ($column->param('primary'))
 		{
-			$sql = "ALTER TABLE `$table_name` DROP PRIMARY KEY, ADD COLUMN ".$column->sql().', ADD PRIMARY KEY ('.$column_name.')';
+			$sql = "ALTER TABLE `$table_name` DROP PRIMARY KEY, ADD COLUMN ".$column->sql().', ADD PRIMARY KEY (`'.$column_name.'`)';
 		}
 		else
 		{

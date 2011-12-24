@@ -55,7 +55,7 @@ class Unit_Migration_Driver_MysqlTest extends Unittest_Extra_Database_TestCase {
 	{
 		$driver = $this->getMock('Migration_Driver_Mysql', array('execute'), array(Kohana::TESTING));
 		$driver->expects($this->at(0))->method('execute')->with($this->equalTo('ALTER TABLE `table1` ADD COLUMN `field1` INT'));
-		$driver->expects($this->at(1))->method('execute')->with($this->equalTo('ALTER TABLE `table1` DROP PRIMARY KEY, ADD COLUMN `field1` INT, ADD PRIMARY KEY (`field1`)'));
+		$driver->expects($this->at(1))->method('execute')->with($this->equalTo('ALTER TABLE `table1` DROP PRIMARY KEY, ADD COLUMN `field1` INT NOT NULL AUTO_INCREMENT, ADD PRIMARY KEY (`field1`)'));
 
 		$driver->add_column('table1', 'field1', 'integer');
 		$driver->add_column('table1', 'field1', 'primary_key');
