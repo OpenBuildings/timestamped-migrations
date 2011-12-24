@@ -223,7 +223,7 @@ You can also give a --version and it will roll back all the migrations down to t
 
 			if( ! $dry_run)
 			{
-				$this->migrations->delete_tables();
+				$this->migrations->clear_all();
 			}
 
 			$this->migrate($options);

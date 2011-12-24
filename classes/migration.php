@@ -21,17 +21,7 @@ abstract class Migration
 	public function __construct($config = null)
 	{
 		$this->config = arr::merge(Kohana::$config->load('migrations')->as_array(), (array) $config);
-
-		$database = Kohana::$config->load('database.'.Arr::get(Kohana::$config->load('migrations'), 'database', 'default'));
-
-		// Set the driver class name
-		$driver = 'Migration_Driver_'.ucfirst($database['type']);
-
-		if ( ! class_exists($driver))
-			throw new Migration_Exception("Driver :type does not exist (class :driver)", array(':type' => $database['type'], ':driver' => $driver));
-
-		// Create the database connection instance
-		$this->driver(new $driver(Arr::get(Kohana::$config->load('migrations'), 'database', 'default')));
+		$this->driver(Migration_Driver::factory(Arr::get($this->config, 'database', 'default')));
 	}
 
 	/**
@@ -155,10 +145,10 @@ abstract class Migration
 	 * @param array $options an array of options
 	 * @return boolean
 	 */
-	public function change_table($table_name, array $options)
+	public function change_table($table_name, $options)
 	{
 		$args = func_get_args();
-		return $this->run_driver("change_table( $table_name , array(".join(", ", array_keys($options))."))", __FUNCTION__, $args);
+		return $this->run_driver("change_table( $table_name , array(".join(", ", array_keys((array) $options))."))", __FUNCTION__, $args);
 	}
 
 	/**

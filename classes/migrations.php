@@ -33,7 +33,7 @@ class Migrations
 		// Create the database connection instance
 		$this->driver = new $driver(Arr::get(Kohana::$config->load('migrations'), 'database', 'default'));    
 
-		$this->driver->generate_schema();
+		$this->driver->versions()->init();
 
 		if( ! is_dir($this->config['path']))
 		{
@@ -43,23 +43,14 @@ class Migrations
 	
 	public function set_executed($version)
 	{
-		$this->driver->set_executed($version);
+		$this->driver->versions()->set($version);
 	}
 	
 	public function set_unexecuted($version)
 	{
-		$this->driver->set_unexecuted($version);
+		$this->driver->versions()->clear($version);
 	}
 
-	public function delete_tables()
-	{
-		foreach ($this->driver->get_tables() as $table) 
-		{
-			$this->driver->drop_table($table);	
-		}
-		$this->driver->generate_schema();
-	}
-	
 	public function generate_new_migration_file($name, $actions_template = NULL)
 	{
 		$actions = new Migration_Actions($this->driver);
@@ -153,9 +144,16 @@ class Migrations
 		return $this->migrations;
 	}
 
+	public function clear_all()
+	{
+		$this->driver->clear_all();
+		$this->driver->versions()->clear_all();
+		return $this;
+	}
+
 	public function get_executed_migrations()
 	{
-		return $this->driver->get_executed_migrations();
+		return $this->driver->versions()->get();
 	}
 
 	public function get_unexecuted_migrations()

@@ -73,7 +73,7 @@ class Migration_Actions
 
 			try
 			{
-				$field_params = $this->driver->get_column($table, $column);
+				$field_params = $this->driver->column($table, $column);
 
 				$this->down[] = "\$this->add_column('$table', '$column', ".self::field_params_to_string($field_params).");";	
 			}
@@ -101,7 +101,7 @@ class Migration_Actions
 
 			try 
 			{
-				$table = $this->driver->get_table($table_name);
+				$table = $this->driver->table($table_name)->load();
 				$fields = array();
 				$options = array();
 
@@ -144,7 +144,7 @@ class Migration_Actions
 
 			try 
 			{
-				$field_params = $this->driver->get_column($table, $column);
+				$field_params = $this->driver->column($table, $column);
 
 				$this->down[] = "\$this->change_column('$table', '$column', ".self::field_params_to_string($field_params).");";	
 			}
@@ -155,36 +155,24 @@ class Migration_Actions
 		}
 	}
 
-	static public function field_params_to_string($params)
+	static public function field_params_to_string($column)
 	{
-		$type = $params[0];
 		$options = '';
 
-		foreach (array_slice($params, 1) as $option_name => $option)
+		foreach ($column->params() as $option_name => $option)
 		{
-			if ($option === NULL)
+			if (is_bool($option))
 			{
-				$option = 'null';
-			}
-			elseif ($option === FALSE)
-			{
-				$option = 'false';
+				$option = $option ? 'TRUE' : 'FALSE';
 			}
 			elseif (is_string($option))
 			{
 				$option = "'$option'";
 			}
-			$options[] = '"'.$option_name.'" => '.$option;
+			$options[] = (is_numeric($option_name) ? '' : '"'.$option_name.'" => ').$option;
 		}
 
-		if ($options)
-		{
-			return "array( '$type', ".join(', ', $options).')';
-		}
-		else
-		{
-			return "'$type'";
-		}
+		return "array( ".join(', ', $options).')';
 	}
 	
 
