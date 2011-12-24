@@ -135,12 +135,12 @@ class Create_User extends Migration
 	public function up()
 	{          
 		$this->create_table( "users", array(
-			'title' => 'string[50]',
-			'is_admin' => array('boolean', 'null' => false, 'default' => 0)
+			'title' => 'string',
+			'is_admin' => array('boolean', 'null' => FALSE, 'default' => 0)
 		));
 
-		$this->add_column("users", "latlon", "POINT");
-		$this->add_column("users", "email", array("string", "null" => false));
+		$this->add_column("users", "latlon", array("type" => "POINT"));
+		$this->add_column("users", "email", array("string", "null" => FALSE));
 
 		$this->add_index("users", "latlon", "latlon", "spatial");
 		$this->add_index("users", "search", array("title", "email"), "fulltext");
@@ -164,51 +164,50 @@ class Create_User extends Migration
 ```
 Available types for columns are:
 
-* decimal
-* float
-* double
+* primary_key
+* string
+* text
 * integer
+* float
+* decimal
 * datetime
-* date
 * timestamp
 * time
-* text
-* string
+* date
 * binary
 * boolean
-* enum
-* tinytext
-* longtext
-* POINT
-* GEOMETRY
-* point
 
 and each column can have options like these
 
 * after - after which column to place this one
-* null - true or false
+* null - TRUE or FALSE
 * default
-* auto - true or false - adds autoincrement
-* unsigned - true or false
-* primary - true or false
+* auto - TRUE or FALSE - adds autoincrement
+* unsigned - TRUE or FALSE
+* limit - limit
+* precision - for ``decimal`` and ``float``
+* primary - TRUE or FALSE
+
+You can use custom database types, to do this skip the column type and define it directly:
+	
+	$this->add_column('table', 'column', array('type' => 'BIGINT', 'null' => FALSE, 'unsigned' => TRUE));
+	$this->add_column('table', 'column', array('type' => 'GEOMETRY', 'null' => FALSE));
 
 ``function create_table($table, $fields, $options)``
 
 Options are:
 
-	* __primary_key__ - bool or string - if true will add an "id" primary key column with autoincrement. If you specified as string - will select that column for primary key. Default is TRUE.
-	* __if_not_exists__ - bool, if TRUE will add an "IF NOT EXISTS" clause
-	* all other options are passed "AS IS" to the table create options section.
+	* __id__ - bool - Set this to FALSE to prevent automatic adding of the id primary_key. Default is TRUE.
+	* __options__ added AS IS to the end of the table definition.
 
 	//Create a table with innoDB, UTF-8 as default charset, and guid for primary key.
 	$this->create_table( "users", array(
-		'title' => 'string[50]',
-		'guid' => 'integer',
-		'is_admin' => array('boolean', 'null' => false, 'default' => 0)
+		'title' => 'string',
+		'guid' => 'primary_key',
+		'is_admin' => array('boolean', 'null' => FALSE, 'default' => 0)
 	), array (
-		'primary_key' => 'guid',
-		'engine' => 'innoDB',
-		'charset' => 'utf8'
+		'id' => FALSE,
+		'options' => array('ENGINE=innoDB', 'CHARSET=utf8')
 	));
 
 ``function add_index($table, $index_name, $columns, $type = 'normal')``
@@ -232,7 +231,7 @@ You can create a template to be used as a basis for generating a migration. This
 
 Example:
 
-	$this->add_column('users', 'facebook_uid', 'string[100]');
+	$this->add_column('users', 'facebook_uid', 'string');
 	$this->add_index('users', 'facebook_uid_index', 'facebook_uid');
 
 	--- DOWN ---
