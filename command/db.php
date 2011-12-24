@@ -258,7 +258,7 @@ You can also give a --version and it will roll back all the migrations down to t
 
 		$file = Kohana::$config->load("migrations.path").DIRECTORY_SEPARATOR.'schema.sql';	
 
-		$this->log_func("system", array(strtr("mysqldump -u:username -p:password --add-drop-database --add-drop-table --no-data :database > :file ", array(
+		$this->log_func("system", array(strtr("mysqldump -u:username -p:password --skip-comments --add-drop-database --add-drop-table --no-data :database | sed 's/AUTO_INCREMENT=[0-9]*\b//' > :file ", array(
 			':username' => $db['username'],
 			':password' => $db['password'],
 			':database' => $db['database'],

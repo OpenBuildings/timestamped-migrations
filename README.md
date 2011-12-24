@@ -220,6 +220,10 @@ You can pass multiple columns for the indexs (as an array of column names), and 
 * fulltext
 * spatial
 
+PRIMARY KEYS
+------------
+
+Primary keys have special handlings. When you create a table, it will create a composite primary key with all your fields with 'primary' => TRUE, and when you add a column with primary_key, it will drop the current primary key and assign the new column as primary key
 
 ## Footnotes 
 A lot of this text has been taken from http://guides.rubyonrails.org/migrations.html as I've tried to mimic their functionality and interface as much as I could.
