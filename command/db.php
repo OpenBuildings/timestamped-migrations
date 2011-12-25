@@ -306,6 +306,8 @@ You can also give a --version and it will roll back all the migrations down to t
 		$this->structure_dump($database);
 	}
 
+	const TEST_LOAD_BRIEF = "Load information to the test database from the schema.sql file";
+	const TEST_LOAD_DESC = "Load sql file, prompts before execution and loads structure into the test database, can pass --force to skip prompt";
 	public function test_load(Command_Options $options)
 	{
 		$this->structure_load($options, Kohana::TESTING);
