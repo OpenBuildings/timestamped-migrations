@@ -306,6 +306,11 @@ You can also give a --version and it will roll back all the migrations down to t
 		$this->structure_dump($database);
 	}
 
+	public function test_load(Command_Options $options)
+	{
+		$this->structure_load($options, Kohana::TESTING);
+	}
+
 	const GENERATE_BRIEF = "Generate a migration file";
 	public function generate(Command_Options $options, $name = NULL)
 	{
