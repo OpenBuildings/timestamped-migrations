@@ -60,7 +60,7 @@ class Migration_Actions
 	{
 		foreach (explode('_and_', $columns) as $column) 
 		{
-			$this->up[] = "\$this->add_column('$table', '$column', 'string[255]');";
+			$this->up[] = "\$this->add_column('$table', '$column', 'string');";
 			$this->down[] = "\$this->remove_column('$table', '$column');";
 		}
 	}
@@ -79,7 +79,7 @@ class Migration_Actions
 			}
 			catch (Migration_Exception $e)
 			{
-				$this->down[] = "\$this->add_column('$table', '$column', 'string[255]');";	
+				$this->down[] = "\$this->add_column('$table', '$column', 'string');";	
 			}
 		}
 	}
@@ -140,7 +140,7 @@ class Migration_Actions
 	{
 		foreach (explode('_and_', $columns) as $column) 
 		{
-			$this->up[] = "\$this->change_column('$table', '$column', 'string[255]');";
+			$this->up[] = "\$this->change_column('$table', '$column', 'string');";
 
 			try 
 			{
@@ -150,7 +150,7 @@ class Migration_Actions
 			}
 			catch (Migration_Exception $e)
 			{
-				$this->down[] = "\$this->change_column('$table', '$column', 'string[255]');";	
+				$this->down[] = "\$this->change_column('$table', '$column', 'string');";	
 			}
 		}
 	}
