@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 
 /**
  * Command line interface for Migrations.
@@ -10,7 +10,7 @@
  */
 class Command_DB extends Command
 {
-	protected $migrations = null;
+	protected $migrations = NULL;
 
 	public function __construct()
 	{
@@ -146,7 +146,7 @@ You can also give a --version and it will roll back all the migrations down to t
 		$unexecuted = $this->migrations->get_unexecuted_migrations();
 		$all = $this->migrations->get_migrations();
 
-		$steps = isset($options['step']) ? (int) $options['step'] : null;
+		$steps = isset($options['step']) ? (int) $options['step'] : NULL;
 
 		$up = array();
 		$down = array();
@@ -157,42 +157,47 @@ You can also give a --version and it will roll back all the migrations down to t
 		{
 			$this->log("Nothing to do", Command::OK);
 		}
-
-		foreach ($down as $version) 
+		else
 		{
-      $migration = $this->migrations->load_migration($version);
-	
-			$this->log(Command::colored($version.' '.get_class($migration).' : migrating down', Command::WARNING). ($dry_run ? Command::colored(" -- Dry Run", 'purple') : ''));
-			$start = microtime(TRUE);
-
-			$migration->dry_run($dry_run)->down();
-
-			if( ! $dry_run)
+			foreach ($down as $version) 
 			{
-				$this->migrations->set_unexecuted($version);
+	      $migration = $this->migrations->load_migration($version);
+		
+				$this->log(Command::colored($version.' '.get_class($migration).' : migrating down', Command::WARNING). ($dry_run ? Command::colored(" -- Dry Run", 'purple') : ''));
+				$start = microtime(TRUE);
+
+				$migration->dry_run($dry_run)->down();
+
+				if( ! $dry_run)
+				{
+					$this->migrations->set_unexecuted($version);
+				}
+
+				$end = microtime(TRUE);
+				$this->log($version.' '.get_class($migration).' : migrated ('.number_format($end-$start, 4).'s)', Command::WARNING);
+			}
+			
+			foreach ($up as $version) 
+			{
+				$migration = $this->migrations->load_migration($version);
+
+				$this->log(Command::colored($version.' '.get_class($migration).' : migrating up', Command::OK). ($dry_run ? Command::colored(" -- Dry Run", 'purple') : ''));
+				$start = microtime(TRUE);
+
+				$migration->dry_run($dry_run)->up();
+				
+				if( ! $dry_run)
+				{
+					$this->migrations->set_executed($version);
+				}			
+
+				$end = microtime(TRUE);
+				$this->log($version.' '.get_class($migration).' : migrated ('.number_format($end-$start, 4).'s)', Command::OK);
 			}
 
-			$end = microtime(TRUE);
-			$this->log($version.' '.get_class($migration).' : migrated ('.number_format($end-$start, 4).'s)', Command::WARNING);
+			$this->structure_dump($options);			
 		}
-		
-		foreach ($up as $version) 
-		{
-			$migration = $this->migrations->load_migration($version);
 
-			$this->log(Command::colored($version.' '.get_class($migration).' : migrating up', Command::OK). ($dry_run ? Command::colored(" -- Dry Run", 'purple') : ''));
-			$start = microtime(TRUE);
-
-			$migration->dry_run($dry_run)->up();
-			
-			if( ! $dry_run)
-			{
-				$this->migrations->set_executed($version);
-			}			
-
-			$end = microtime(TRUE);
-			$this->log($version.' '.get_class($migration).' : migrated ('.number_format($end-$start, 4).'s)', Command::OK);
-		}
 	}
 
 	const RECREATE_BRIEF = "Drop all tables and re-run all migrations";
@@ -218,7 +223,7 @@ You can also give a --version and it will roll back all the migrations down to t
 
 			if( ! $dry_run)
 			{
-				$this->migrations->delete_tables();
+				$this->migrations->clear_all();
 			}
 
 			$this->migrate($options);
@@ -229,22 +234,10 @@ You can also give a --version and it will roll back all the migrations down to t
 		}		
 	}
 
-	const COPY_STRUCTURE_BRIEF = "Copy structure from default DB to another";
-	const COPY_STRUCTURE_DESC = "Dump the current database structure to a temporary file and them import it to the given databse. 
-The first argument is the name of the database connection in you database config file. 
-Removes all the current structure of the target database. 
-It will prompt before preceeding.";
-
-	public function copy_structure(Command_Options $options, $database)
+	static private function _db_params($type)
 	{
-		$dbs = array();
-		$dbs['from'] = Kohana::$config->load('database.default.connection');
-		$dbs['to'] = Kohana::$config->load("database.$database.connection");
+		$db = Kohana::$config->load("database.$type.connection");	
 
-		if ( ! $dbs['to'])
-			throw new Kohana_Exception("Database :database does not exist, available databases are :databases", array(":database" => $database, ":databases" => join(', ', array_keys((array) Kohana::$config->load("database")))));
-
-		foreach($dbs as &$db)
 		if( ! isset($db['database']) )
 		{
 			$matches = array();
@@ -252,46 +245,81 @@ It will prompt before preceeding.";
 				throw new Kohana_Exception("Error connecting to database, database missing");
 			$db['database'] = $matches[1];
 		}
-		$file = tempnam(sys_get_temp_dir(), "Database_");
-		
-		$this->log("This will destroy database ".$dbs['to']['database']."Are you sure? [yes/NO]", Command::WARNING);
 
-		$input = strtolower(trim(fgets(STDIN))); 
+		return $db;
+	}
 
-		if($input == 'yes')
+	const STRUCTURE_DUMP_BRIEF = "Dump sql schema.sql file";
+	const STRUCTURE_DUMP_DESC = "Dump sql schema.sql file";
+
+	public function structure_dump(Command_Options $options, $database = NULL)
+	{
+		$db = self::_db_params($database ? $database : 'default');
+
+		$file = Kohana::$config->load("migrations.path").DIRECTORY_SEPARATOR.'schema.sql';	
+
+		$this->log_func("system", array(strtr("mysqldump -u:username -p:password --skip-comments --add-drop-database --add-drop-table --no-data :database | sed 's/AUTO_INCREMENT=[0-9]*\b//' > :file ", array(
+			':username' => $db['username'],
+			':password' => $db['password'],
+			':database' => $db['database'],
+			':file'      => $file
+		))), Command::OK, "Saving structure ".$db['database']." to ".Debug::path($file));
+	}
+
+	const STRUCTURE_LOAD_BRIEF = "Load information to database from the schema.sql file";
+	const STRUCTURE_LOAD_DESC = "Load sql file, prompts before execution, can pass --force to skip";
+
+	public function structure_load(Command_Options $options, $database = NULL)
+	{
+		$db = self::_db_params($database ? $database : 'default');
+
+		if( ! $options->has('force') )
 		{
-			$this->log("Dumping current structure to $file", Command::OK);
-			system(strtr("mysqldump -u:username -p:password --add-drop-database --add-drop-table --no-data :database > :tmp ", array(
-				':username' => $dbs['from']['username'],
-				':password' => $dbs['from']['password'],
-				':database' => $dbs['from']['database'],
-				':tmp'      => $file
-			)));
-
-			$this->log("Importing structure from $file to ".$dbs['to']['database'], Command::OK);
-			system(strtr("mysql -u:username -p:password :database < :tmp ", array(
-				':username' => $dbs['to']['username'],
-				':password' => $dbs['to']['password'],
-				':database' => $dbs['to']['database'],
-				':tmp'      => $file
-			)));
-
-			$this->log("removing $file", Command::OK);
-			unlink($file);
+			$this->log("This will destroy database ".$db['database']."Are you sure? [yes/NO]", Command::WARNING);
+			$input = strtolower(trim(fgets(STDIN)));
 		}
 		else
 		{
-			$this->log("Nothing done", Command::WARNING);
+			$input = 'yes';
+		}
+
+		if( $input == 'yes')
+		{
+			$file = Kohana::$config->load("migrations.path").DIRECTORY_SEPARATOR.'schema.sql';	
+
+			$this->log_func("system", array(strtr("mysql -u:username -p:password :database < :file ", array(
+				':username' => $db['username'],
+				':password' => $db['password'],
+				':database' => $db['database'],
+				':file'      => $file
+			))), Command::OK, "Loading data from ".Debug::path($file)." to ".$db['database']);
 		}
 	}
 
+
+	const STRUCTURE_COPY_BRIEF = "Copy structure from default DB to another";
+	const STRUCTURE_COPY_DESC = "This basically executes db:structure:dump and db:structure:load sequentialy";
+
+	public function structure_copy(Command_Options $options, $database)
+	{
+		$this->structure_dump($options);
+		$this->structure_dump($database);
+	}
+
+	const TEST_LOAD_BRIEF = "Load information to the test database from the schema.sql file";
+	const TEST_LOAD_DESC = "Load sql file, prompts before execution and loads structure into the test database, can pass --force to skip prompt";
+	public function test_load(Command_Options $options)
+	{
+		$this->structure_load($options, Kohana::TESTING);
+	}
+
 	const GENERATE_BRIEF = "Generate a migration file";
-	public function generate(Command_Options $options, $name = null)
+	public function generate(Command_Options $options, $name = NULL)
 	{
 		if( ! $name)
 			throw new Kohana_Exception("Please set a name for the migration ( db:generate {name} )");
 
-		$template = $options->has('template') ? $options['template'] : null;
+		$template = $options->has('template') ? $options['template'] : NULL;
 
 		$migration = $this->migrations->generate_new_migration_file($name, $template);
 

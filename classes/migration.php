@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 
 /**
  * Migration.
@@ -17,22 +17,32 @@ abstract class Migration
 	abstract public function up();
 	abstract public function down();
 
+
 	public function __construct($config = null)
 	{
 		$this->config = arr::merge(Kohana::$config->load('migrations')->as_array(), (array) $config);
+		$this->driver(Migration_Driver::factory(Arr::get($this->config, 'database', 'default')));
+	}
 
-		$database = Kohana::$config->load('database.'.Arr::get(Kohana::$config->load('migrations'), 'database', 'default'));
-
-		// Set the driver class name
-		$driver = 'Migration_Driver_'.ucfirst($database['type']);
-
-		// Create the database connection instance
-		$this->driver = new $driver(Arr::get(Kohana::$config->load('migrations'), 'database', 'default'));		
+	/**
+	 * Get or set the current driver
+	 */
+	public function driver(Migration_Driver $driver = NULL)
+	{
+		if ($driver == NULL)
+		{
+			return $this->driver;
+		}
+		else 
+		{
+			$this->driver = $driver;
+		}
+		return $this;
 	}
 
 	public function log($message)
 	{
-		if($this->config['log'])
+		if ($this->config['log'])
 		{
 			call_user_func($this->config['log'], $message);
 		}
@@ -43,9 +53,9 @@ abstract class Migration
 		}
 	}
 
-	public function dry_run($dry_run = null)
+	public function dry_run($dry_run = NULL)
 	{
-		if( $dry_run !== null)
+		if ($dry_run !== NULL)
 		{
 			$this->dry_run = $dry_run;
 			return $this;
@@ -58,7 +68,8 @@ abstract class Migration
 	{
 		$this->log("-- ".($this->dry_run ? "[dry-run]" : '')."$title");
 		$start = microtime(TRUE);
-		if( ! $this->dry_run)
+
+		if ( ! $this->dry_run)
 		{
 			call_user_func_array(array($this->driver, $method), $args);
 		}
@@ -67,7 +78,7 @@ abstract class Migration
 		return $this;
 	}
 
-	public function execute($sql, $parmas = null)
+	public function execute($sql, $parmas = NULL)
 	{
 		$args = func_get_args();
 		$display = str_replace("\n", '↵', $sql);
@@ -109,7 +120,7 @@ abstract class Migration
 	 * @param bool if_not_exists
 	 * @return	boolean
 	 */
-	public function create_table($table_name, $fields, $options = null)
+	public function create_table($table_name, $fields, $options = NULL)
 	{
 		$args = func_get_args();
 		return $this->run_driver("create_table( $table_name, array(".join(", ", array_keys($fields)).") )", __FUNCTION__, $args);
@@ -134,10 +145,10 @@ abstract class Migration
 	 * @param array $options an array of options
 	 * @return boolean
 	 */
-	public function change_table($table_name, array $options)
+	public function change_table($table_name, $options)
 	{
 		$args = func_get_args();
-		return $this->run_driver("change_table( $table_name , array(".join(", ", array_keys($options))."))", __FUNCTION__, $args);
+		return $this->run_driver("change_table( $table_name , array(".join(", ", array_keys((array) $options))."))", __FUNCTION__, $args);
 	}
 
 	/**

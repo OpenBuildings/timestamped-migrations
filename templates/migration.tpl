@@ -1,6 +1,6 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
-* create_table($table_name, $fields, $primary_key = TRUE)
+* create_table($table_name, $fields, array('id' => TRUE, 'options' => ''))
 * drop_table($table_name)
 * rename_table($old_name, $new_name)
 * add_column($table_name, $column_name, $params)

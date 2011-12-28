@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 
 /**
  * Driver
@@ -11,53 +11,66 @@
 abstract class Migration_Driver
 {
 	/**
-	 * Valid types
-	 * @var array
+	 * Get the driver of a srtain type
+	 * @param type $type 
+	 * @return type
 	 */
-	protected $types = array
-	(
-		'decimal',
-		'float',
-		'double',
-		'integer',
-		'datetime',
-		'date',
-		'timestamp',
-		'time',
-		'text',
-		'string',
-		'binary',
-		'boolean',
-		'enum',
-		'tinytext',
-		'longtext',
-		'POINT',
-		'GEOMETRY',
-		'point',
-	);
-
-	
-	/**
-	 * Is this a valid type?
-	 *
-	 * @return bool
-	 */
-	protected function is_type($type)
+	static public function factory($database = 'default')
 	{
-		return in_array($type, $this->types);
-	}	
+		$config = Kohana::$config->load("database.$database");
 
-	abstract public function generate_schema();
-	abstract public function get_executed_migrations();
-	abstract public function set_executed($version);
-	abstract public function set_unexecuted($version);
+		if ( ! $config)
+			throw new Migration_Exception("Configuration :database for database does not exist", array(':database' => $database));
+
+		// Set the driver class name
+		$driver = 'Migration_Driver_'.ucfirst($config['type']);
+
+		if ( ! class_exists($driver))
+			throw new Migration_Exception("Driver :type does not exist (class :driver)", array(':type' => $config['type'], ':driver' => $driver));
+
+		// Create the database driver instance
+		return new $driver($database);
+	}
+
+	protected $versions = null;
+
+	public function __construct($config)
+	{
+		$class = get_class($this).'_Versions';
+		$this->versions = $class($this);
+	}
+
+	/**
+	 * Get or set the current versions
+	 */
+	public function versions(Migration_Driver_Versions $versions = NULL)
+	{
+		if ($versions == NULL)
+		{
+			return $this->versions;
+		}
+		else 
+		{
+			$this->versions = $versions;
+		}
+		return $this;
+	}
+
+	abstract public function clear_all();
+
+	abstract public function table($name);
+	abstract public function column($name);
+	
 	abstract public function create_table($table_name, $fields, $primary_key = TRUE);
 	abstract public function drop_table($table_name);
+	abstract public function change_table($table_name, $options);
 	abstract public function rename_table($old_name, $new_name);
+
 	abstract public function add_column($table_name, $column_name, $params);
-	abstract public function rename_column($table_name, $column_name, $new_column_name);
-	abstract public function change_column($table_name, $column_name, $params);
 	abstract public function remove_column($table_name, $column_name);
+	abstract public function change_column($table_name, $column_name, $params);
+	abstract public function rename_column($table_name, $column_name, $new_column_name);
+
 	abstract public function add_index($table_name, $index_name, $columns, $index_type = 'normal');
 	abstract public function remove_index($table_name, $index_name);
 }
