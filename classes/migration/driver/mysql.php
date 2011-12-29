@@ -122,7 +122,7 @@ class Migration_Driver_Mysql extends Migration_Driver
 
 	public function rename_column($table_name, $column_name, $new_column_name)
 	{
-		$column = $this->column($column_name)->load($table_name);
+		$column = $this->column($column_name)->load($table_name)->name($new_column_name);
 		$this->execute("ALTER TABLE `$table_name` CHANGE `$column_name` ".$column->sql());
 		return $this;
 	}
