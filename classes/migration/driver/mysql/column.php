@@ -69,13 +69,15 @@ class Migration_Driver_Mysql_Column extends Migration_Driver_Column
 			{
 				throw new Migration_Exception("Column :column was not found in table :table", array(':column' => $this->name, ':table' => $this->name));
 			}
+			
+			$result = $result->fetchObject();
 		}
 		else
 		{
 			$result = $table_name;
 		}
 
-		$result = $result->fetchObject();
+		
 
 		$this->params(array(
 			'type' => $result->Type,

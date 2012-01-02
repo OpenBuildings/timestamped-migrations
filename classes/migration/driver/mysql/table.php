@@ -44,11 +44,11 @@ class Migration_Driver_Mysql_Table extends Migration_Driver_Table
 
 		$table->options[] = 'ENGINE='.$result->fetchObject()->Engine;
 
-		$fields_reuslt = $this->pdo->query("SHOW COLUMNS FROM `{$this->name}`");
+		$fields_reuslt = $this->driver->pdo->query("SHOW COLUMNS FROM `{$this->name}`");
 
 		while($result = $fields_reuslt->fetchObject())
-		{
-			$this->columns[$result->Name] = $this->driver->column($result->Name)->load($result);
+		{			
+			$this->columns[$result->Field] = $this->driver->column($result->Field)->load($result);
 		}
 		return $this;
 	}

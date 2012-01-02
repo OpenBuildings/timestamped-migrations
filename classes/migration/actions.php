@@ -105,7 +105,7 @@ class Migration_Actions
 				$fields = array();
 				$options = array();
 
-				foreach ($table->fields as $name => $field_params)
+				foreach ($table->columns as $name => $field_params)
 				{
 					$fields[] = "\n\t\t\t'$name' => ".self::field_params_to_string($field_params);
 				}
@@ -115,7 +115,7 @@ class Migration_Actions
 					$options[] = "'$name' => '$option'";
 				}
 
-				$this->down[] = "\$this->create_table('{$table->name}', array( ".join(',', $fields)." \n\t\t), array( ".join(',', $options)." )); ";	
+				$this->down[] = "\$this->create_table('{$table->name()}', array( ".join(',', $fields)." \n\t\t), array( ".join(',', $options)." )); ";	
 			}
 			catch (Migration_Exception $e)
 			{
@@ -157,19 +157,18 @@ class Migration_Actions
 
 	static public function field_params_to_string($column)
 	{
-		$options = '';
+		$options = array();
 
 		foreach ($column->params() as $option_name => $option)
 		{
-			if (is_bool($option))
-			{
-				$option = $option ? 'TRUE' : 'FALSE';
+			if ($option) {
+				if (is_bool($option)) {
+					$option = $option ? 'TRUE' : 'FALSE';
+				} elseif (is_string($option)) {
+					$option = "'$option'";
+				}
+				$options[] = (is_numeric($option_name) ? '' : '"' . $option_name . '" => ') . $option;
 			}
-			elseif (is_string($option))
-			{
-				$option = "'$option'";
-			}
-			$options[] = (is_numeric($option_name) ? '' : '"'.$option_name.'" => ').$option;
 		}
 
 		return "array( ".join(', ', $options).')';
