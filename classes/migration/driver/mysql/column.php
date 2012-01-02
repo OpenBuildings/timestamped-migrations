@@ -77,11 +77,14 @@ class Migration_Driver_Mysql_Column extends Migration_Driver_Column
 			$result = $table_name;
 		}
 
-		
+
+		$limit = preg_match('/([^\(]+)(\((\d+)\))?( UNSIGNED)?/', $result->Type, $type);
 
 		$this->params(array(
-			'type' => $result->Type,
-			'null' => $result->Null == 'NO',
+			'type' => $type[1],
+			'limit' => Arr::get($type, 3),
+			'unsigned' => isset($type[4]) ? TRUE : NULL,
+			'null' => $result->Null == 'NO' ? TRUE : FALSE,
 			'default' => $result->Default ? $result->Default : NULL,
 			'auto' => $result->Extra == 'auto_increment',
 			'primary' => $result->Key == 'PRI',
