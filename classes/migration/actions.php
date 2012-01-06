@@ -73,7 +73,7 @@ class Migration_Actions
 
 			try
 			{
-				$field_params = $this->driver->column($table, $column);
+				$field_params = $this->driver->column($column)->load($table);
 
 				$this->down[] = "\$this->add_column('$table', '$column', ".self::field_params_to_string($field_params).");";	
 			}
@@ -144,7 +144,7 @@ class Migration_Actions
 
 			try 
 			{
-				$field_params = $this->driver->column($table, $column);
+				$field_params = $this->driver->column($column)->load($table);
 
 				$this->down[] = "\$this->change_column('$table', '$column', ".self::field_params_to_string($field_params).");";	
 			}

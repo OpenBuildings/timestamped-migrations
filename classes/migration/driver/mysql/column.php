@@ -77,7 +77,6 @@ class Migration_Driver_Mysql_Column extends Migration_Driver_Column
 			$result = $table_name;
 		}
 
-
 		$limit = preg_match('/([^\(]+)(\((\d+)\))?( UNSIGNED)?/', $result->Type, $type);
 
 		$this->params(array(
