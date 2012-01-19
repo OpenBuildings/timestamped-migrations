@@ -60,7 +60,7 @@ class Migration_Actions
 	{
 		foreach (explode('_and_', $columns) as $column) 
 		{
-			$this->up[] = "\$this->add_column('$table', '$column', 'string');";
+			$this->up[] = "\$this->add_column('$table', '$column', '".self::guess_column_type($column)."');";
 			$this->down[] = "\$this->remove_column('$table', '$column');";
 		}
 	}
@@ -140,7 +140,7 @@ class Migration_Actions
 	{
 		foreach (explode('_and_', $columns) as $column) 
 		{
-			$this->up[] = "\$this->change_column('$table', '$column', 'string');";
+			$this->up[] = "\$this->change_column('$table', '$column', '".self::guess_column_type($column)."');";
 
 			try 
 			{
@@ -174,5 +174,26 @@ class Migration_Actions
 		return "array( ".join(', ', $options).')';
 	}
 	
+
+	static public function guess_column_type($column)
+	{
+		if(preg_match('/_id$/', $column))
+			return 'integer';
+
+		if(preg_match('/_at$/', $column))
+			return 'datetime';
+
+		if(preg_match('/_on$/', $column))
+			return 'date';
+		
+		if(preg_match('/^id$/', $column))
+			return 'integer';
+
+			if(preg_match('/^(description|text)$/', $column))
+				return 'text';			
+
+		return 'string';
+	}
+
 
 }

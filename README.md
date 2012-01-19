@@ -108,6 +108,8 @@ You can use more than one pattern if you separate them with __\_also\___
 
 If none of the patterns match, it will just create a migration with empty up and down methods.
 
+Additionally - column types are guessed according to suffix - _id columns will be integers, _at -> datetime, _on -> date, and "description" and "text" will be assumed to be text.
+
 Helper Methods
 --------------
 
