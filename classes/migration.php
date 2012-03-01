@@ -78,7 +78,7 @@ abstract class Migration
 		return $this;
 	}
 
-	public function execute($sql, $parmas = NULL)
+	public function execute($sql, $params = NULL)
 	{
 		$args = func_get_args();
 		$display = str_replace("\n", '↵', $sql);
