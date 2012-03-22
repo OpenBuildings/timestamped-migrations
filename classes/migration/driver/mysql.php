@@ -85,6 +85,20 @@ class Migration_Driver_Mysql extends Migration_Driver
 		return $this;
 	}
 
+	public function query($sql, $params = NULL)
+	{
+		try 
+		{
+			$query = $this->pdo->prepare($sql);
+			$query->execute($params);
+			return $query;
+		} 
+		catch (PDOException $e) 
+		{
+			throw new Migration_Exception(":sql\n Exception: :message", array(':sql' => $sql, ":message" => $e->getMessage()));
+		}
+	}
+
 	public function create_table($table_name, $fields, $options = NULL)
 	{
 		$this->execute($this->table($table_name)->params($fields, $options)->sql());
