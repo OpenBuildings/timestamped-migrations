@@ -32,15 +32,15 @@ class Command_DB extends Command
 
 	protected function _migrate($executed, $unexecuted, $all, $arguments, $steps, &$up, &$down)
 	{
-		if(isset($arguments["version"]))
+		if (isset($arguments["version"]))
 		{
-			foreach($all as $migration)
+			foreach ($all as $migration)
 			{
-			  if( ! in_array($migration, $executed) AND $migration <= $arguments["version"])
+			  if ( ! in_array($migration, $executed) AND $migration <= $arguments["version"])
 			  {
 			    $up[] = $migration;
 			  }
-			  if( in_array( $migration, $executed) AND $migration > $arguments["version"]) 
+			  if ( in_array( $migration, $executed) AND $migration > $arguments["version"]) 
 			  {
 			    $down[] = $migration;
 			  }
@@ -60,9 +60,9 @@ class Command_DB extends Command
 
 	protected function _migrate_up($executed, $unexecuted, $all, $arguments, $steps, &$up, &$down)
 	{
-		if(isset($arguments["version"]))
+		if (isset($arguments["version"]))
 		{
-			if(in_array($arguments["version"], $unexecuted))
+			if (in_array($arguments["version"], $unexecuted))
 			{
 				$up[] = $arguments["version"];	
 			}
@@ -84,9 +84,9 @@ You can also give a --version and it will roll back all the migrations down to t
 
 	protected function _migrate_down($executed, $unexecuted, $all, $options, $steps, &$up, &$down)
 	{
-		if(isset($options["version"]))
+		if (isset($options["version"]))
 		{
-			if(in_array($options["version"], $executed))
+			if (in_array($options["version"], $executed))
 			{
 				$down[] = $options["version"];	
 			}
@@ -108,9 +108,9 @@ You can also give a --version and it will roll back and up all the migrations to
 
 	protected function _migrate_redo($executed, $unexecuted, $all, $options, $steps, &$up, &$down)
 	{
-		if(isset($options["version"]))
+		if (isset($options["version"]))
 		{
-			if(in_array($options["version"], $executed))
+			if (in_array($options["version"], $executed))
 			{
 				$down[] = $options["version"];	
 			}
@@ -120,7 +120,7 @@ You can also give a --version and it will roll back and up all the migrations to
 			$down = array_slice($executed, 0, $steps ? $steps : 1);
 		}
 
-		if(isset($arguments["version"]))
+		if (isset($arguments["version"]))
 		{
 			$up[] = $arguments["version"];
 		}
@@ -153,7 +153,7 @@ You can also give a --version and it will roll back all the migrations down to t
 
 		$this->$func($executed, $unexecuted, $all, $options, $steps, $up, $down);
 
-		if( ! count($down) AND ! count($up))
+		if ( ! count($down) AND ! count($up))
 		{
 			$this->log("Nothing to do", Command::OK);
 		}
@@ -168,7 +168,7 @@ You can also give a --version and it will roll back all the migrations down to t
 
 				$migration->dry_run($dry_run)->down();
 
-				if( ! $dry_run)
+				if ( ! $dry_run)
 				{
 					$this->migrations->set_unexecuted($version);
 				}
@@ -186,7 +186,7 @@ You can also give a --version and it will roll back all the migrations down to t
 
 				$migration->dry_run($dry_run)->up();
 				
-				if( ! $dry_run)
+				if ( ! $dry_run)
 				{
 					$this->migrations->set_executed($version);
 				}			
@@ -205,7 +205,7 @@ You can also give a --version and it will roll back all the migrations down to t
 
 	public function recreate(Command_Options $options)
 	{
-		if( ! $options->has('force') )
+		if ( ! $options->has('force') )
 		{
 			$this->log("This will destroy all data in the current database. Are you sure? [yes/NO]", Command::WARNING);
 			$input = strtolower(trim(fgets(STDIN)));
@@ -215,13 +215,13 @@ You can also give a --version and it will roll back all the migrations down to t
 			$input = 'yes';
 		}
 
-		if($input == 'yes')
+		if ($input == 'yes')
 		{
 			$dry_run = $options->has('dry-run');
 
 			$this->log(Command::colored('dropping tables', Command::OK). ($dry_run ? Command::colored(" -- Dry Run", 'purple') : ''));
 
-			if( ! $dry_run)
+			if ( ! $dry_run)
 			{
 				$this->migrations->clear_all();
 			}
@@ -234,17 +234,19 @@ You can also give a --version and it will roll back all the migrations down to t
 		}		
 	}
 
-	static private function _db_params($type)
+	static private function _db_params($database)
 	{
-		$db = Kohana::$config->load("database.$type.connection");	
+		$db = Kohana::$config->load("database.$database.connection");	
 
-		if( ! isset($db['database']) )
+		if ( ! isset($db['database']) )
 		{
 			$matches = array();
-			if( ! preg_match('/dbname=([^;]+);', $db['dsn'], $matches));
+			if ( ! preg_match('/dbname=([^;]+);', $db['dsn'], $matches));
 				throw new Kohana_Exception("Error connecting to database, database missing");
 			$db['database'] = $matches[1];
 		}
+
+		$db['type'] = Kohana::$config->load("database.$database.type");
 
 		return $db;
 	}
@@ -273,7 +275,7 @@ You can also give a --version and it will roll back all the migrations down to t
 	{
 		$db = self::_db_params($database ? $database : 'default');
 
-		if( ! $options->has('force') )
+		if ( ! $options->has('force') )
 		{
 			$this->log("This will destroy database ".$db['database']."Are you sure? [yes/NO]", Command::WARNING);
 			$input = strtolower(trim(fgets(STDIN)));
@@ -283,17 +285,24 @@ You can also give a --version and it will roll back all the migrations down to t
 			$input = 'yes';
 		}
 
-		if( $input == 'yes')
+		if ( $input == 'yes')
 		{
-			$file = Kohana::$config->load("migrations.path").DIRECTORY_SEPARATOR.'schema.sql';	
-
-			$this->log_func("system", array(strtr("mysql -u:username -p:password :database < :file ", array(
-				':username' => $db['username'],
-				':password' => $db['password'],
-				':database' => $db['database'],
-				':file'      => $file
-			))), Command::OK, "Loading data from ".Debug::path($file)." to ".$db['database']);
+			$schema = Kohana::$config->load("migrations.path").DIRECTORY_SEPARATOR.'schema.sql';	
+			$this->_load_sql_file($schema, $database);
 		}
+	}
+
+	protected function _load_sql_file($file, $database = NULL)
+	{
+		$db = self::_db_params($database ? $database : 'default');
+
+		$this->log_func("system", array(strtr("mysql -u:username -p:password :database < :file ", array(
+			':username' => $db['username'],
+			':password' => $db['password'],
+			':database' => $db['database'],
+			':file'      => $file
+		))), Command::OK, "Loading data from ".Debug::path($file)." to ".$db['database']);
+
 	}
 
 
@@ -307,16 +316,27 @@ You can also give a --version and it will roll back all the migrations down to t
 	}
 
 	const TEST_LOAD_BRIEF = "Load information to the test database from the schema.sql file";
-	const TEST_LOAD_DESC = "Load sql file, prompts before execution and loads structure into the test database, can pass --force to skip prompt";
+	const TEST_LOAD_DESC = "Load sql file schema file, in the configured location, along with files in <MODULE FOLDER>/tests/test_data/structure/test-schema-<database type>.sql files from the different modules (example: MODPATH/jelly/tests/test_data/test-schema-mysql.sql)";
 	public function test_load(Command_Options $options)
 	{
-		$this->structure_load($options, Kohana::TESTING);
+		$db = self::_db_params(Kohana::TESTING);
+		
+		$module_test_schemas = Kohana::find_file('tests/test_data/structure', 'test-schema-'.$db['type'], 'sql', TRUE);
+
+		$schema = Kohana::$config->load("migrations.path").DIRECTORY_SEPARATOR.'schema.sql';	
+		$this->_load_sql_file($schema, Kohana::TESTING);
+
+		foreach ($module_test_schemas as $schema) 
+		{
+			$this->_load_sql_file($schema, Kohana::TESTING);
+		}
+
 	}
 
 	const GENERATE_BRIEF = "Generate a migration file";
 	public function generate(Command_Options $options, $name = NULL)
 	{
-		if( ! $name)
+		if ( ! $name)
 			throw new Kohana_Exception("Please set a name for the migration ( db:generate {name} )");
 
 		$template = $options->has('template') ? $options['template'] : NULL;
