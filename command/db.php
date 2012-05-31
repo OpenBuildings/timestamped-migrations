@@ -316,7 +316,7 @@ You can also give a --version and it will roll back all the migrations down to t
 	}
 
 	const TEST_LOAD_BRIEF = "Load information to the test database from the schema.sql file";
-	const TEST_LOAD_DESC = "Load sql file schema file, in the configured location, along with files in <MODULE FOLDER>/tests/test_data/structure/test-schema-<database type>.sql files from the different modules (example: MODPATH/jelly/tests/test_data/test-schema-mysql.sql)";
+	const TEST_LOAD_DESC = "Load sql file schema file, in the configured location, along with files in <MODULE FOLDER>/tests/test_data/structure/test-schema-<database type>.sql files from the different modules (example: MODPATH/jam/tests/test_data/test-schema-mysql.sql)";
 	public function test_load(Command_Options $options)
 	{
 		$db = self::_db_params(Kohana::TESTING);
