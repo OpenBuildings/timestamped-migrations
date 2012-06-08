@@ -183,6 +183,9 @@ class Migration_Actions
 		if(preg_match('/_at$/', $column))
 			return 'datetime';
 
+		if(preg_match('/^is_/', $column))
+			return 'boolean';
+
 		if(preg_match('/_on$/', $column))
 			return 'date';
 		
