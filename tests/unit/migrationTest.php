@@ -6,7 +6,7 @@
  * @group extensions.timestamped-migrations
  * @package Timestamped Migraitons
  */
-class Unit_MigrationTest extends Unittest_Extra_Database_TestCase {
+class Unit_MigrationTest extends Unittest_Extra_FuncTest_TestCase {
 
 	public function test_load_driver()
 	{
