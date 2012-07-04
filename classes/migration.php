@@ -78,13 +78,16 @@ abstract class Migration
 		return $will_return ? $return : $this;
 	}
 
-	public function execute($sql, $params = NULL)
+	public function execute($sql, $params = NULL, $display = NULL)
 	{
 		$args = func_get_args();
-		$display = str_replace("\n", '↵', $sql);
-		$display = preg_replace("/[\s\t]+/", " ", $display);
-		$display = Text::limit_chars($display, 60);
-		return $this->run_driver("execute( $display )", __FUNCTION__, $args);		
+		if ($display === NULL)
+		{
+			$display = str_replace("\n", '↵', $sql);
+			$display = preg_replace("/[\s\t]+/", " ", $display);
+			$display = "execute( ".Text::limit_chars($display, 80)." )";
+		}
+		return $this->run_driver($display, __FUNCTION__, $args);		
 	}
 
 	public function query($sql, $params = NULL)
