@@ -2,11 +2,10 @@
 
 /**
  * Tests for Migraiton Actions
- * @group extensions
- * @group extensions.timestamped-migrations
+ * @group timestamped-migrations
  * @package Timestamped Migraitons
  */
-class Unit_Migration_ActionsTest extends Unittest_Extra_FuncTest_TestCase {
+class Unit_Migration_ActionsTest extends Unittest_TestCase {
 
 	public function data_parse_name()
 	{

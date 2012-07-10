@@ -177,22 +177,25 @@ class Migration_Actions
 
 	static public function guess_column_type($column)
 	{
-		if(preg_match('/_id$/', $column))
+		if (preg_match('/_id$/', $column))
 			return 'integer';
 
-		if(preg_match('/_at$/', $column))
+		if (preg_match('/^id$/', $column))
+			return 'integer';
+
+		if (preg_match('/_count$/', $column))
+			return 'integer';
+
+		if (preg_match('/_at$/', $column))
 			return 'datetime';
 
-		if(preg_match('/^is_/', $column))
+		if (preg_match('/^is_/', $column))
 			return 'boolean';
 
-		if(preg_match('/_on$/', $column))
+		if (preg_match('/_on$/', $column))
 			return 'date';
 		
-		if(preg_match('/^id$/', $column))
-			return 'integer';
-
-			if(preg_match('/^(description|text)$/', $column))
+			if (preg_match('/^(description|text)$/', $column))
 				return 'text';			
 
 		return 'string';

@@ -2,11 +2,10 @@
 
 /**
  * Tests for Migraiton Actions
- * @group extensions
- * @group extensions.timestamped-migrations
+ * @group timestamped-migrations
  * @package Timestamped Migraitons
  */
-class Unit_Migration_Driver_Mysql_VersionsTest extends Unittest_Extra_FuncTest_TestCase {
+class Unit_Migration_Driver_Mysql_VersionsTest extends Unittest_TestCase {
 
 	public function test_versions()
 	{

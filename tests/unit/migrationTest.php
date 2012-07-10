@@ -2,11 +2,10 @@
 
 /**
  * Tests for Migraiton
- * @group extensions
- * @group extensions.timestamped-migrations
+ * @group timestamped-migrations
  * @package Timestamped Migraitons
  */
-class Unit_MigrationTest extends Unittest_Extra_FuncTest_TestCase {
+class Unit_MigrationTest extends Unittest_TestCase {
 
 	public function test_load_driver()
 	{
@@ -16,9 +15,10 @@ class Unit_MigrationTest extends Unittest_Extra_FuncTest_TestCase {
 
 	public function test_driver_class()
 	{
-		$this->setExpectedException('ErrorException');
+		$this->setExpectedException('PHPUnit_Framework_Error');
 		$migration = new Migration_One(array('type' => 'mysql'));
-		$migration->driver(new stdClass);
+		$dummy_driver = new stdClass;
+		$migration->driver($dummy_driver);
 		
 	}
 

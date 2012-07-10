@@ -29,15 +29,12 @@ abstract class Migration
 	 */
 	public function driver(Migration_Driver $driver = NULL)
 	{
-		if ($driver == NULL)
-		{
-			return $this->driver;
-		}
-		else 
+		if ($driver !== NULL)
 		{
 			$this->driver = $driver;
+			return $this;
 		}
-		return $this;
+		return $this->driver;
 	}
 
 	public function log($message)
