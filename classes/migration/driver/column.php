@@ -21,6 +21,7 @@ abstract class Migration_Driver_Column
 		'after',
 		'default',
 		'unsigned',
+		'values',
 	);
 
 	protected $params = array();

@@ -162,9 +162,20 @@ class Migration_Actions
 		foreach ($column->params() as $option_name => $option)
 		{
 			if ($option) {
-				if (is_bool($option)) {
+				if (is_array($option))
+				{
+					foreach ($option as & $param) 
+					{
+						$param = "'$param'";
+					}
+					$option = 'array('.join(', ', $option).')';
+				}
+				elseif (is_bool($option)) 
+				{
 					$option = $option ? 'TRUE' : 'FALSE';
-				} elseif (is_string($option)) {
+				} 
+				elseif (is_string($option)) 
+				{
 					$option = "'$option'";
 				}
 				$options[] = (is_numeric($option_name) ? '' : '"' . $option_name . '" => ') . $option;

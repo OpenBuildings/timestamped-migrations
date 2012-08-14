@@ -29,24 +29,26 @@ class Migration_Driver_Mysql_Column extends Migration_Driver_Column
 		'date' => array('type' => 'DATE'),
 		'binary' => array('type' => 'BLOB', 'limit' => 255),
 		'boolean' => array('type' => 'TINYINT', 'limit' => 1, 'null' => FALSE, 'default' => 0),
+		'enum' => array('type' => 'ENUM', 'values' => array()),
 	);
 
 	static protected $native_types = array
 	(
-		'CHAR' => 'string',
-		'VARCHAR' => 'string',
-		'TEXT' => 'text',
-		'INT' => 'integer',
-		'INTEGER' => 'integer',
-		'TINYINT' => 'boolean',
-		'BIGINT' => 'integer',
-		'FLOAT' => 'float',
-		'DECIMAL' => 'decimal',
-		'DATETIME' => 'datetime',
-		'TIMESTAMP' => 'timestamp',
-		'TIME' => 'time',
-		'DATE' => 'date',
-		'BLOB' => 'binary',
+		'char' => 'string',
+		'varchar' => 'string',
+		'text' => 'text',
+		'int' => 'integer',
+		'integer' => 'integer',
+		'tinyint' => 'boolean',
+		'bigint' => 'integer',
+		'float' => 'float',
+		'decimal' => 'decimal',
+		'datetime' => 'datetime',
+		'timestamp' => 'timestamp',
+		'time' => 'time',
+		'date' => 'date',
+		'blob' => 'binary',
+		'enum' => 'enum',
 	);
 
 	public function column_params_for($column)
@@ -79,12 +81,31 @@ class Migration_Driver_Mysql_Column extends Migration_Driver_Column
 			$result = $table_name;
 		}
 
-		$limit = preg_match('/([^\(]+)(\((\d+)\))?( UNSIGNED)?/', $result->Type, $type);
+		if (preg_match('/([^\(]+)(\((\d+)\))?( UNSIGNED)?/', $result->Type, $type))
+		{
+			$type = $type[1];
+			$limit = Arr::get($type, 3);
+			$unsigned = isset($type[4]) ? TRUE : NULL;
+			$values = NULL;
+		}
+
+		if (preg_match('/enum\(([^\)]+)\)/', $result->Type, $enum_type))
+		{
+			$type = 'ENUM';
+			$limit = NULL;
+			$unsigned = NULL;
+			$values = explode(',', $enum_type[1]);
+			foreach ($values as & $value) 
+			{
+				$value = trim($value, "'");
+			}
+		}
 
 		$this->params(array(
-			'type' => $type[1],
-			'limit' => Arr::get($type, 3),
-			'unsigned' => isset($type[4]) ? TRUE : NULL,
+			'type' => $type,
+			'limit' => $limit,
+			'unsigned' => $unsigned,
+			'values' => $values,
 			'null' => $result->Null == 'NO' ? TRUE : FALSE,
 			'default' => $result->Default ? $result->Default : NULL,
 			'auto' => $result->Extra == 'auto_increment',
@@ -96,7 +117,7 @@ class Migration_Driver_Mysql_Column extends Migration_Driver_Column
 
 	public function type()
 	{
-		return Arr::get(self::native_types, $this->type);
+		return Arr::get(self::native_types, strtolower($this->type));
 	}
 
 	public function sql()
@@ -106,7 +127,8 @@ class Migration_Driver_Mysql_Column extends Migration_Driver_Column
 		return join(' ', array_filter(array(
 			"`{$this->name}`",
 			$type, 
-			$limit ? ( $precision ? ( "({$limit}, {$precision})" ) : "({$limit})") : NULL, 
+			$limit ? ($precision ? ( "({$limit}, {$precision})" ) : "({$limit})") : NULL, 
+			$values ? ('('.join(', ', array_map(array($this->driver->pdo, 'quote'), $values)).')') : NULL, 
 			$default ? ("DEFAULT ".$this->driver->pdo->quote($default)) : NULL,
 			$unsigned ? ("UNSIGNED") : NULL,
 			$null !== NULL ? ($null ? "NULL" : "NOT NULL") : NULL,
