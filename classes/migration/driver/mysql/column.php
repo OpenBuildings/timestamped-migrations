@@ -83,9 +83,9 @@ class Migration_Driver_Mysql_Column extends Migration_Driver_Column
 
 		if (preg_match('/([^\(]+)(\((\d+)\))?( UNSIGNED)?/', $result->Type, $type))
 		{
-			$type = $type[1];
 			$limit = Arr::get($type, 3);
 			$unsigned = isset($type[4]) ? TRUE : NULL;
+			$type = $type[1];
 			$values = NULL;
 		}
 
