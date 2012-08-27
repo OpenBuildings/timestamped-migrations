@@ -251,5 +251,11 @@ And then:
 
 And you're done. If you use the --template option, all the name patters are of course ignored.
 
+License
+-------
+
+jamaker is Copyright © 2012 OpenBuildings Inc, developed by Ivan Kerin. It is free software, and may be redistributed under the terms specified in the LICENSE file.
+
+
 
 	
