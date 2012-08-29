@@ -3,9 +3,9 @@
 /**
  * Driver
  *
- * @package    OpenBuildings/timestamped-migrations
+ * @package    Despark/timestamped-migrations
  * @author     Ivan Kerin
- * @copyright  (c) 2011-2012 OpenBuildings Inc.
+ * @copyright  (c) 2011-2012 Despark Ltd.
  * @license    http://creativecommons.org/licenses/by-sa/3.0/legalcode
 */
 abstract class Migration_Driver_Column

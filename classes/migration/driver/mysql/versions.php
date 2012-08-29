@@ -3,10 +3,10 @@
 /**
  * Mysql Driver 
  *
- * @package    OpenBuildings/timestamped-migrations
+ * @package    Despark/timestamped-migrations
  * @author		 Matías Montes
  * @author     Ivan Kerin
- * @copyright  (c) 2011-2012 OpenBuildings Inc.
+ * @copyright  (c) 2011-2012 Despark Ltd.
  * @license    http://creativecommons.org/licenses/by-sa/3.0/legalcode
  */
 class Migration_Driver_Mysql_Versions extends Migration_Driver_Versions
