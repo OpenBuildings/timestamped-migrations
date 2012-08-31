@@ -15,7 +15,7 @@ class Migration_Driver_Mysql extends Migration_Driver
 	
 	public function __construct($database)
 	{
-		if($database instanceof PDO)
+		if ($database instanceof PDO)
 		{
 			$this->pdo = $database;
 		}
@@ -23,7 +23,7 @@ class Migration_Driver_Mysql extends Migration_Driver
 		{
 			$database = Kohana::$config->load('database.'.$database);
 
-			if($database['type'] !== 'pdo')
+			if ($database['type'] !== 'pdo')
 			{
 				$database['connection']['dsn'] = $database['type'].':'.
 				'host='.$database['connection']['hostname'].';'.
@@ -33,7 +33,8 @@ class Migration_Driver_Mysql extends Migration_Driver
 			$this->pdo = new PDO(
 				$database['connection']['dsn'], 
 				$database['connection']['username'], 
-				$database['connection']['password']
+				$database['connection']['password'],
+				array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")
 			);
 		}
 
