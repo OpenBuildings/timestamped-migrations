@@ -60,6 +60,7 @@ abstract class Migration_Driver
 
 	abstract public function table($name);
 	abstract public function column($name);
+	abstract public function quote($string);
 	
 	abstract public function create_table($table_name, $fields, $primary_key = TRUE);
 	abstract public function drop_table($table_name);

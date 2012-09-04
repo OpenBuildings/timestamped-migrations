@@ -97,6 +97,17 @@ abstract class Migration
 	}
 
 
+	public function quote($value)
+	{
+		if (is_array($value))
+		{
+			return '('.join(', ', array_map(array($this->driver(), 'quote'), $value)).')';
+		}
+		else
+		{
+			return $this->driver()->quote($value);
+		}
+	}
 
 	/**
 	 * Create Table
