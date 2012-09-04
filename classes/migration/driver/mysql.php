@@ -100,6 +100,11 @@ class Migration_Driver_Mysql extends Migration_Driver
 		}
 	}
 
+	public function quote($string)
+	{
+		return $this->pdo->quote($string);
+	}
+
 	public function create_table($table_name, $fields, $options = NULL)
 	{
 		$this->execute($this->table($table_name)->params($fields, $options)->sql());
