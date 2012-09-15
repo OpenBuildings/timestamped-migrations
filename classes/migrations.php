@@ -161,6 +161,56 @@ class Migrations
 		return array_diff($this->get_migrations(), $this->get_executed_migrations());
 	}
 
+	protected function execute($version, $direction, $dry_run)
+	{
+		$migration = $this->load_migration($version)->dry_run($dry_run);
+
+		$this->log($version.' '.get_class($migration).' : migrating '.$direction.($dry_run ? " -- Dry Run" : ''));
+		$start = microtime(TRUE);
+
+		switch ($direction) 
+		{
+			case 'down':
+				$migration->down();
+				if ( ! $dry_run)
+				{
+					$this->set_unexecuted($version);
+				}
+			break;
+			
+			case 'up':
+				$migration->up();
+				if ( ! $dry_run)
+				{
+					$this->set_executed($version);
+				}
+			break;
+		}
+
+		$end = microtime(TRUE);
+		$this->log($version.' '.get_class($migration).' : migrated ('.number_format($end - $start, 4).'s)');
+	}
+
+	public function execute_all($up = array(), $down = array(), $dry_run = FALSE)
+	{
+		if ( ! count($down) AND ! count($up))
+		{
+			$this->log("Nothing to do");
+		}
+		else
+		{
+			foreach ($down as $version) 
+			{
+				$this->execute($version, 'down', $dry_run);
+			}
+			
+			foreach ($up as $version) 
+			{
+				$this->execute($version, 'up', $dry_run);
+			}
+		}
+	}
+
 	public function log($message)
 	{
 		if ($this->config['log'])
