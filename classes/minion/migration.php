@@ -47,7 +47,7 @@ abstract class Minion_Migration extends Minion_Task {
 
 		if ($up OR $down)
 		{
-			Minion_Task::factory('db:structure:dump')->execute(array());
+			Minion_Task::factory('db:structure:dump')->execute(array('database' => 'default', 'file' => NULL));
 		}
 	}
 
