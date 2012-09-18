@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Migrate up the first unexecuted migration. Behavior changes when supplied any of the parameters
  *
