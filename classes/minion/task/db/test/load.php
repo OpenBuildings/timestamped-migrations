@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Load the latest structure to the test database. 
  * Will also load all the sql files from test/test_data/structure/test-schema-<type>.sql

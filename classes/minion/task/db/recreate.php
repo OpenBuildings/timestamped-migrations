@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Drop all the tables and rerun all the migrations.
  * Will ask for confirmation before proceeding.

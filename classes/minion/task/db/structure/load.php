@@ -1,4 +1,4 @@
-<?php defined('SYSPATH') or die('No direct script access.');
+<?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Load the structure in migrations/schema.sql file to the database, clearing the database in the process.
  * Will ask for confirmation before proceeding.
