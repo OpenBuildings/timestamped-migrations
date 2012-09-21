@@ -63,7 +63,10 @@ abstract class Migration
 
 	protected function run_driver($title, $method, $args, $will_return = FALSE)
 	{
-		$this->log("-- ".($this->dry_run ? "[dry-run]" : '')."$title");
+		if ($title)
+		{
+			$this->log("-- ".($this->dry_run ? "[dry-run]" : '')."$title");
+		}
 		$start = microtime(TRUE);
 
 		if ( ! $this->dry_run)
@@ -71,7 +74,10 @@ abstract class Migration
 			$return = call_user_func_array(array($this->driver, $method), $args);
 		}
 		$end = microtime(TRUE);
-		$this->log('   --> '.number_format($end-$start, 4).'s');
+		if ($title)
+		{
+			$this->log('   --> '.number_format($end-$start, 4).'s');
+		}
 		return $will_return ? $return : $this;
 	}
 
