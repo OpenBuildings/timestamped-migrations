@@ -68,6 +68,7 @@ abstract class Migration
 			$this->log("-- ".($this->dry_run ? "[dry-run]" : '')."$title");
 		}
 		$start = microtime(TRUE);
+		$return = NULL;
 
 		if ( ! $this->dry_run)
 		{
