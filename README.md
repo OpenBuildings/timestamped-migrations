@@ -4,14 +4,14 @@
 
 Migrations are a convenient way for you to alter your database in a structured and organized manner. You could edit fragments of SQL by hand but you would then be responsible for telling other developers that they need to go and run them. You'd also have to keep track of which changes need to be run against the production machines next time you deploy.
 
-Migrations module tracks which migrations have already been run so all you have to do is update your source and run ./kohana db:migrate. Migrations module will work out which migrations should be run. 
+Migrations module tracks which migrations have already been run so all you have to do is update your source and run ./minion db:migrate. Migrations module will work out which migrations should be run. 
 
 Migrations also allow you to describe these transformations using PHP. The great thing about this is that it is database independent: you don't need to worry about the precise syntax of CREATE TABLE any more than you worry about variations on SELECT * (you can drop down to raw SQL for database specific features). For example you could use SQLite3 in development, but MySQL in production.
 
 Dependencies
 ------------
 
-This module utilizes [kohana-cli](https://github.com/ivank/kohana-cli) for it's command line interface. You use your own, you can implement it with this module.
+This module utilizes [kohana-minion](https://github.com/kohana/minion/tree/k3.2-v1.0) for it's command line interface. The system is fairly decoupled from it though so you can easily implement this with other cli tools if you use something different.
 
 Options
 -------
@@ -23,11 +23,15 @@ Options
 Command line tools
 ==================
 
-Kohana cli provides a set of kohana-cli commands to work with migrations which boils down to running certain sets of migrations. The very first migration related command you use will probably be db:migrate. In its most basic form it just runs the up method for all the migrations that have not yet been run. If there are no such migrations it exits.
+This module provides a set of kohana-minion tasks to work with migrations giving you the ability to easily create, run and rollback them. All of them have extensive documentation which you can easily read with kohana-minion's built in commands, e. g.
+
+	./minion db:migrate --help
+
+The most common migration related task you use will probably use is db:migrate. In its most basic form it just runs the up method for all the migrations that have not yet been run. If there are no such migrations it exits.
 
 If you specify a target version, Active Record will run the required migrations (up or down) until it has reached the specified version. The version is the numerical prefix on the migration’s filename. For example to migrate to version 1322837510 run
 
-	./kohana db:migrate --version=1322837510
+	./minion db:migrate --version=1322837510
 
 If this is greater than the current version (i.e. it is migrating upwards) this will run the up method on all migrations up to and including 2008090612, if migrating downwards this will run the down method on all the migrations down to, but not including, 2008090612.
 
@@ -36,16 +40,16 @@ Rolling Back
 
 A common task is to rollback the last migration, for example if you made a mistake in it and wish to correct it. Rather than tracking down the version number associated with the previous migration you can run
 
-	./kohana db:rollback
+	./minion db:rollback
 
 This will run the down method from the latest migration. If you need to undo several migrations you can provide a --step option:
 
-	./kohana db:rollback --step=3
+	./minion db:rollback --step=3
 will run the down method from the last 3 migrations.
 
 The db:migrate:redo task is a shortcut for doing a rollback and then migrating back up again. As with the db:rollback task you can use the --step option if you need to go more than one version back, for example
 
-	./kohana db:migrate:redo --step=3
+	./minion db:migrate:redo --step=3
 
 Neither of these commands do anything you could not do with db:migrate, they are simply more convenient since you do not need to explicitly specify the version to migrate to.
 
@@ -54,7 +58,7 @@ Being Specific
 
 If you need to run a specific migration up or down the db:migrate:up and db:migrate:down commands will do that. Just specify the appropriate version and the corresponding migration will have its up or down method invoked, for example
 
-	./kohana db:migrate:up --version=1321025460
+	./minion db:migrate:up --version=1321025460
 
 will run the up method from the 2008090612 migration. These commands check whether the migration has already run, so for example db:migrate:up --version=2008090612 will do nothing if Migrations module believes that --version=1321025460 has already been run.
 
@@ -63,7 +67,7 @@ Dry Run
 
 You can add a ``--dry-run`` option and it will only show you the migrations that will be executed, without accually executing anything.
 
-	./kohana db:migrate:up --step=3 --dry-run
+	./minion db:migrate:up --step=3 --dry-run
 
 
 Generating a migration
@@ -71,7 +75,7 @@ Generating a migration
 
 You can generate a migration with the db:generate command which will create a file inside the path you've specified in the config of the module. It will prefix the filename with the timestamp and return the created filename
 
-	./kohana db:generate create_users
+	./minion db:generate --name=create_users
 
 will create a migration that looks like this
 
@@ -108,7 +112,7 @@ You can use more than one pattern if you separate them with __\_also\___
 
 If none of the patterns match, it will just create a migration with empty up and down methods.
 
-Additionally - column types are guessed according to suffix - _id columns will be integers, _at -> datetime, _on -> date, and "description" and "text" will be assumed to be text.
+Additionally - column types are guessed according to suffix - _id and _count columns will be integers, _at -> datetime, _on -> date, is_ -> boolean and "description" and "text" will be assumed to be text. The default type of a column is string.
 
 Helper Methods
 --------------
@@ -247,14 +251,14 @@ Example:
 
 And then:
 
-	php kohana db:generate add_facebook_id --template=<path to template file>
+	./minion db:generate add_facebook_id --template=<path to template file>
 
 And you're done. If you use the --template option, all the name patters are of course ignored.
 
 License
 -------
 
-jamaker is Copyright © 2012 Despark Ltd. developed by Ivan Kerin. It is free software, and may be redistributed under the terms specified in the LICENSE file.
+timestamped migrations are Copyright © 2012 Despark Ltd. developed by Ivan Kerin. It is free software, and may be redistributed under the terms specified in the LICENSE file.
 
 
 
