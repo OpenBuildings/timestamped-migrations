@@ -27,7 +27,7 @@ This module provides a set of kohana-minion tasks to work with migrations giving
 
 	./minion db:migrate --help
 
-The most common migration related task you use will probably use is db:migrate. In its most basic form it just runs the up method for all the migrations that have not yet been run. If there are no such migrations it exits.
+The most common migration related task you use will probably be db:migrate. In its most basic form it just runs the up method for all the migrations that have not yet been run. If there are no such migrations it exits.
 
 If you specify a target version, Active Record will run the required migrations (up or down) until it has reached the specified version. The version is the numerical prefix on the migration’s filename. For example to migrate to version 1322837510 run
 
