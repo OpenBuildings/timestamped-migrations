@@ -10,12 +10,6 @@
 */
 abstract class Migration_Driver
 {
-	protected $_affected_rows = NULL;
-	
-	public function affected_rows()
-	{
-		return $_affected_rows;
-	}
 
 	/**
 	 * Get the driver of a srtain type
@@ -40,6 +34,7 @@ abstract class Migration_Driver
 	}
 
 	protected $versions = null;
+	protected $_affected_rows = NULL;
 
 	public function __construct($config)
 	{
@@ -47,6 +42,10 @@ abstract class Migration_Driver
 		$this->versions = $class($this);
 	}
 
+	public function affected_rows()
+	{
+		return $this->_affected_rows;
+	}
 	/**
 	 * Get or set the current versions
 	 */
