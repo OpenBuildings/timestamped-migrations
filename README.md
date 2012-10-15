@@ -1,7 +1,3 @@
-# Blog Post
-
-[http://ivank.github.com/blog/2011/11/timestamped-migrations/](http://ivank.github.com/blog/2011/11/timestamped-migrations/)
-
 Migrations are a convenient way for you to alter your database in a structured and organized manner. You could edit fragments of SQL by hand but you would then be responsible for telling other developers that they need to go and run them. You'd also have to keep track of which changes need to be run against the production machines next time you deploy.
 
 Migrations module tracks which migrations have already been run so all you have to do is update your source and run ./minion db:migrate. Migrations module will work out which migrations should be run. 
@@ -206,15 +202,17 @@ Options are:
 * __id__ - bool - Set this to FALSE to prevent automatic adding of the id primary_key. Default is TRUE.
 * __options__ added AS IS to the end of the table definition.
 
-	//Create a table with innoDB, UTF-8 as default charset, and guid for primary key.
-	$this->create_table( "users", array(
-		'title' => 'string',
-		'guid' => 'primary_key',
-		'is_admin' => array('boolean', 'null' => FALSE, 'default' => 0)
-	), array (
-		'id' => FALSE,
-		'options' => array('ENGINE=innoDB', 'CHARSET=utf8')
-	));
+``` php
+// Create a table with innoDB, UTF-8 as default charset, and guid for primary key.
+$this->create_table( "users", array(
+	'title' => 'string',
+	'guid' => 'primary_key',
+	'is_admin' => array('boolean', 'null' => FALSE, 'default' => 0)
+), array (
+	'id' => FALSE,
+	'options' => array('ENGINE=innoDB', 'CHARSET=utf8')
+));
+```
 
 ``function add_index($table, $index_name, $columns, $type = 'normal')``
 
