@@ -207,15 +207,15 @@ Options are:
 * __options__ added AS IS to the end of the table definition.
 
 ``` php
-	// Create a table with innoDB, UTF-8 as default charset, and guid for primary key.
-	$this->create_table( "users", array(
-		'title' => 'string',
-		'guid' => 'primary_key',
-		'is_admin' => array('boolean', 'null' => FALSE, 'default' => 0)
-	), array (
-		'id' => FALSE,
-		'options' => array('ENGINE=innoDB', 'CHARSET=utf8')
-	));
+// Create a table with innoDB, UTF-8 as default charset, and guid for primary key.
+$this->create_table( "users", array(
+	'title' => 'string',
+	'guid' => 'primary_key',
+	'is_admin' => array('boolean', 'null' => FALSE, 'default' => 0)
+), array (
+	'id' => FALSE,
+	'options' => array('ENGINE=innoDB', 'CHARSET=utf8')
+));
 ```
 
 ``function add_index($table, $index_name, $columns, $type = 'normal')``
