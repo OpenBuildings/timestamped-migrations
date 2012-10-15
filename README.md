@@ -206,7 +206,8 @@ Options are:
 * __id__ - bool - Set this to FALSE to prevent automatic adding of the id primary_key. Default is TRUE.
 * __options__ added AS IS to the end of the table definition.
 
-	//Create a table with innoDB, UTF-8 as default charset, and guid for primary key.
+``` php
+	// Create a table with innoDB, UTF-8 as default charset, and guid for primary key.
 	$this->create_table( "users", array(
 		'title' => 'string',
 		'guid' => 'primary_key',
@@ -215,6 +216,7 @@ Options are:
 		'id' => FALSE,
 		'options' => array('ENGINE=innoDB', 'CHARSET=utf8')
 	));
+```
 
 ``function add_index($table, $index_name, $columns, $type = 'normal')``
 
