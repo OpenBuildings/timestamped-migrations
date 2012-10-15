@@ -10,6 +10,13 @@
 */
 abstract class Migration_Driver
 {
+	protected $_affected_rows = NULL;
+	
+	public function affected_rows()
+	{
+		return $_affected_rows;
+	}
+
 	/**
 	 * Get the driver of a srtain type
 	 * @param type $type 

@@ -69,14 +69,16 @@ class Migration_Driver_Mysql extends Migration_Driver
 	{
 		try 
 		{
+			$statement = $this->pdo->prepare($sql);
 			if ($params)
 			{
-				$this->pdo->prepare($sql)->execute((array) $params);
+				$statement->execute((array) $params);
 			}
 			else
 			{
-				$this->pdo->exec($sql);
+				$statement->execute();
 			}
+			$this->_affected_rows = $statement->rowCount();
 		} 
 		catch (PDOException $e) 
 		{

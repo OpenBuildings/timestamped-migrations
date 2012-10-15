@@ -75,6 +75,10 @@ abstract class Migration
 			$return = call_user_func_array(array($this->driver, $method), $args);
 		}
 		$end = microtime(TRUE);
+		if ($method == 'execute')
+		{
+			$this->log('   --> Affected rows: '.$this->driver->affected_rows());
+		}
 		if ($title)
 		{
 			$this->log('   --> '.number_format($end-$start, 4).'s');

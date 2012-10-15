@@ -203,8 +203,8 @@ You can use custom database types, to do this skip the column type and define it
 
 Options are:
 
-	* __id__ - bool - Set this to FALSE to prevent automatic adding of the id primary_key. Default is TRUE.
-	* __options__ added AS IS to the end of the table definition.
+* __id__ - bool - Set this to FALSE to prevent automatic adding of the id primary_key. Default is TRUE.
+* __options__ added AS IS to the end of the table definition.
 
 	//Create a table with innoDB, UTF-8 as default charset, and guid for primary key.
 	$this->create_table( "users", array(
