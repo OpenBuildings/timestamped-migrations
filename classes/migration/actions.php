@@ -194,7 +194,7 @@ class Migration_Actions
 		if (preg_match('/^(id|position)$/', $column))
 			return 'integer';
 
-		if (preg_match('/_count$/', $column))
+		if (preg_match('/(_count|_width|_height|_x|_y)$/', $column))
 			return 'integer';
 
 		if (preg_match('/_at$/', $column))
