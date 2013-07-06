@@ -28,7 +28,8 @@ class Migrations
 		$database = Kohana::$config->load('database.'.Arr::get(Kohana::$config->load('migrations'), 'database', 'default'));
 
 		// Set the driver class name
-		$driver = 'Migration_Driver_'.$database['type'];
+		$driver_name = in_array($database['type'], array('PDO', 'MySQL')) ? 'Mysql' : ucfirst($database['type']);
+		$driver = 'Migration_Driver_'.$driver_name;
 
 		// Create the database connection instance
 		$this->driver = new $driver(Arr::get(Kohana::$config->load('migrations'), 'database', 'default'));    
