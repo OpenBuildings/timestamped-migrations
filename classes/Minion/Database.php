@@ -14,9 +14,9 @@ abstract class Minion_Database extends Minion_Task {
 
 		if ( ! isset($db['database']) )
 		{
-			$matches = array();
-			if ( ! preg_match('/dbname=([^;]+);', $db['dsn'], $matches));
+			if ( ! preg_match('/dbname=([^;]+)/', $db['dsn'], $matches))
 				throw new Kohana_Exception("Error connecting to database, database missing");
+
 			$db['database'] = $matches[1];
 		}
 
