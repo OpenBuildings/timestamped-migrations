@@ -210,7 +210,7 @@ $this->create_table( "users", array(
 	'is_admin' => array('boolean', 'null' => FALSE, 'default' => 0)
 ), array (
 	'id' => FALSE,
-	'options' => array('ENGINE=innoDB', 'CHARSET=utf8')
+	'options' => 'ENGINE=innoDB CHARSET=utf8'
 ));
 ```
 
