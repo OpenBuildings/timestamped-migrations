@@ -24,7 +24,8 @@ abstract class Migration_Driver
 			throw new Migration_Exception("Configuration :database for database does not exist", array(':database' => $database));
 
 		// Set the driver class name
-		$driver = 'Migration_Driver_'.ucfirst($config['type']);
+		$driver_name = in_array($config['type'], array('PDO', 'MySQL')) ? 'Mysql' : ucfirst($config['type']);
+		$driver = 'Migration_Driver_'.$driver_name;
 
 		if ( ! class_exists($driver))
 			throw new Migration_Exception("Driver :type does not exist (class :driver)", array(':type' => $config['type'], ':driver' => $driver));
