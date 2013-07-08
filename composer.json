@@ -15,5 +15,8 @@
 	"require": {
 		"php": ">=5.3.0",
 		"composer/installers": "*"
+	},
+	"require-dev": {
+		"openbuildings/kohana-test-bootsrap": "dev-master"
 	}
 }

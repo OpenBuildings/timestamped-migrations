@@ -1,0 +1,15 @@
+--- 
+language: php
+
+php:
+  - 5.3
+
+script:
+  - mkdir -p build/logs
+  - phpunit --coverage-clover build/logs/clover.xml
+
+before_script:
+  - composer install --dev
+  - mysql -e 'create database test-timestamp-migrations;'
+# after_script:
+#   - php vendor/bin/coveralls -v
