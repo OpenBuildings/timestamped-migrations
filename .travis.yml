@@ -10,6 +10,6 @@ script:
 
 before_script:
   - composer install --dev
-  - mysql -e 'create database test-timestamp-migrations;'
+  - mysql -e 'create database `test-timestamp-migrations`;'
 # after_script:
 #   - php vendor/bin/coveralls -v
