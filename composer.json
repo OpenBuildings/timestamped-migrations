@@ -18,7 +18,6 @@
 	},
 	"require-dev": {
 		"phpunit/phpunit": "3.7.*",
-		"satooshi/php-coveralls": "dev-master",
 		"openbuildings/kohana-test-bootsrap": "dev-master"
 	}
 }
