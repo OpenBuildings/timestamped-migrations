@@ -18,6 +18,6 @@
 	},
 	"require-dev": {
 		"phpunit/phpunit": "3.7.*",
-		"openbuildings/kohana-test-bootsrap": "dev-master"
+		"openbuildings/kohana-test-bootsrap": "0.1.*"
 	}
 }
