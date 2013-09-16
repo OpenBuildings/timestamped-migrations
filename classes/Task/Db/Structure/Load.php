@@ -25,9 +25,9 @@ class Task_DB_Structure_Load extends Minion_Database {
 
 		if ($options['force'] === NULL OR 'yes' === Minion_CLI::read("This will destroy database ".$db['database']." Are you sure? [yes/NO]"))
 		{
-			$command = strtr("mysql -u:username -p:password :database < :file ", array(
+			$command = strtr("mysql -u:username :password :database < :file ", array(
 				':username' => $db['username'],
-				':password' => $db['password'],
+				':password' => $db['password'] ? '-p'.$db['password'] : '',
 				':database' => $db['database'],
 				':file'     => $file
 			));
