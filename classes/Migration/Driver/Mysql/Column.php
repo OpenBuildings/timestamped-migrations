@@ -135,6 +135,7 @@ class Migration_Driver_Mysql_Column extends Migration_Driver_Column
 			$auto ? ("AUTO_INCREMENT") : NULL,
 			$after ? ("AFTER `{$after}`") : NULL,
 			$first ? ("FIRST") : NULL,
+			$comment ? ("COMMENT '{$comment}'") : NULL,
 		)));
 	}
 
