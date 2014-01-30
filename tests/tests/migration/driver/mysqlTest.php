@@ -133,7 +133,7 @@ class Unit_Migration_Driver_MysqlTest extends PHPUnit_Framework_TestCase {
 			array('text', '`field2` TEXT'),
 			array(array('type' => 'BIGINT'), '`field2` BIGINT'),
 			array('integer', '`field2` INT'),
-			array('boolean', '`field2` TINYINT (1) NOT NULL'),
+			array('boolean', '`field2` TINYINT (1) DEFAULT \'0\' NOT NULL'),
 			array('primary_key', '`field2` INT NOT NULL AUTO_INCREMENT'),
 			array('decimal', '`field2` DECIMAL (10, 2)'),
 			array(array('decimal', 'limit' => 7), '`field2` DECIMAL (7, 2)'),
@@ -143,8 +143,14 @@ class Unit_Migration_Driver_MysqlTest extends PHPUnit_Framework_TestCase {
 			array(array('integer', 'auto' => TRUE), '`field2` INT AUTO_INCREMENT'),
 			array(array('integer', 'null' => FALSE), '`field2` INT NOT NULL'),
 			array(array('integer', 'unsigned' => TRUE, 'null' => FALSE), '`field2` INT UNSIGNED NOT NULL'),
+			array(array('integer', 'unsigned' => TRUE, 'null' => FALSE, 'default' => 5), '`field2` INT UNSIGNED DEFAULT \'5\' NOT NULL'),
+			array(array('integer', 'unsigned' => TRUE, 'null' => FALSE, 'default' => '0'), '`field2` INT UNSIGNED DEFAULT \'0\' NOT NULL'),
+			array(array('integer', 'unsigned' => TRUE, 'null' => FALSE, 'default' => 0), '`field2` INT UNSIGNED DEFAULT \'0\' NOT NULL'),
 			array(array('integer', 'primary' => TRUE), '`field2` INT'),
 			array(array('integer', 'after' => 'field2'), '`field2` INT AFTER `field2`'),
+			array(array('integer', 'after' => 'field2', 'comment' => 'ABCDE'), '`field2` INT COMMENT \'ABCDE\' AFTER `field2`'),
+			array(array('integer', 'first' => TRUE), '`field2` INT FIRST'),
+			array(array('integer', 'first' => TRUE, 'comment' => 'ABCDE'), '`field2` INT COMMENT \'ABCDE\' FIRST'),
 			array(array('integer', 'default' => 3), '`field2` INT DEFAULT \'3\''),
 		);
 	}
