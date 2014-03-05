@@ -23,7 +23,9 @@
  *  - is_... - boolean
  *  - description or text - text
  *
- * @param string name required paramter - the name of the migration
+ * options:
+ *  - name: required paramter - the name of the migration
+ *
  * @author     Ivan Kerin
  * @copyright  (c) 2011-2014 OpenBuildings Inc.
  * @license    http://www.opensource.org/licenses/isc-license.txt

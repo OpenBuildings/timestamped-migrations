@@ -3,9 +3,11 @@
  * Copy the structure of one database to another.
  * Will ask for confirmation before proceeding.
  *
- * @param string from database id from config/database.php file to load structure from, 'default' by default
- * @param string to database id from config/database.php file to dump structure to
- * @param boolean force use this flag to skip confirmation
+ * options:
+ * 	- from: database id from config/database.php file to load structure from, 'default' by default
+ * 	- to: database id from config/database.php file to dump structure to
+ * 	- force: se this flag to skip confirmation
+ *
  * @author     Ivan Kerin
  * @copyright  (c) 2011-2014 OpenBuildings Inc.
  * @license    http://www.opensource.org/licenses/isc-license.txt

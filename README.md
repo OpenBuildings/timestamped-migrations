@@ -1,6 +1,12 @@
+Timestamped Migrations
+======================
+
+[![Build Status](https://travis-ci.org/OpenBuildings/timestamped-migrations.png?branch=master)](https://travis-ci.org/OpenBuildings/timestamped-migrations)
+[![Latest Stable Version](https://poser.pugx.org/openbuildings/timestamped-migrations/v/stable.png)](https://packagist.org/packages/openbuildings/timestamped-migrations)
+
 Migrations are a convenient way for you to alter your database in a structured and organized manner. You could edit fragments of SQL by hand but you would then be responsible for telling other developers that they need to go and run them. You'd also have to keep track of which changes need to be run against the production machines next time you deploy.
 
-Migrations module tracks which migrations have already been run so all you have to do is update your source and run ./minion db:migrate. Migrations module will work out which migrations should be run. 
+Migrations module tracks which migrations have already been run so all you have to do is update your source and run ./minion db:migrate. Migrations module will work out which migrations should be run.
 
 Migrations also allow you to describe these transformations using PHP. The great thing about this is that it is database independent: you don't need to worry about the precise syntax of CREATE TABLE any more than you worry about variations on SELECT * (you can drop down to raw SQL for database specific features). For example you could use SQLite3 in development, but MySQL in production.
 
@@ -17,7 +23,7 @@ Options
 * type - the driver for the backend for which migrations have been already executed as well as the migrations themselves, defaults to mysql
 
 Command line tools
-==================
+------------------
 
 This module provides a set of kohana-minion tasks to work with migrations giving you the ability to easily create, run and rollback them. All of them have extensive documentation which you can easily read with kohana-minion's built in commands, e. g.
 
@@ -83,7 +89,7 @@ class Create_User extends Migration
 	{
 		$this->create_table('users', array( ));
 	}
-	
+
 	public function down()
 	{
 		$this->drop_table('users');
@@ -96,19 +102,19 @@ There are several patterns in the filename that will be recognized and converted
 
 * create\_table\_{table}
 * drop\_table\_{table}
-* add\_{columns}\_to\_{table} where {columns} is a list of column names, delimited by __\_and\___ so you can write ``add\_name\_and\_title\_to\_users`` - which will add both columns.
+* add\_{columns}\_to\_{table} where {columns} is a list of column names, delimited by ``_and_`` so you can write ``add_name_and_title_to_users`` - which will add both columns.
 * remove\_{columns}\_from\_{table}
 * change\_{columns}\_in\_{table}
 * rename\_table\_{old\_name}\_to\_{new\_name}
 * rename\_{old\_column\_name}\_to\_{new\_column\_name}\_in\_{table\_name}
 
-You can use more than one pattern if you separate them with __\_also\___
+You can use more than one pattern if you separate them with ``_also_``
 
 	php kohana db:generate add_name_and_title_to_users_also_create_profiles
 
 If none of the patterns match, it will just create a migration with empty up and down methods.
 
-Additionally - column types are guessed according to suffix - _id and _count columns will be integers, _at -> datetime, _on -> date, is_ -> boolean and "description" and "text" will be assumed to be text. The default type of a column is string.
+Additionally - column types are guessed according to suffix - \_id and \_count columns will be integers, \_at -> datetime, \_on -> date, is\_ -> boolean and "description" and "text" will be assumed to be text. The default type of a column is string.
 
 Helper Methods
 --------------
@@ -123,7 +129,7 @@ You have a bunch of helper methods that will simplify your life writing migratio
 * change_column
 * rename_column
 * add_index
-* remove_index	
+* remove_index
 * change_table
 
 If you need to perform tasks specific to your database (for example create a foreign key constraint) then the execute method allows you to execute arbitrary SQL. A migration is just a regular PHP class so you're not limited to these functions. For example after adding a column you could write code to set the value of that column for existing records (if necessary using your models).
@@ -135,7 +141,7 @@ Here's a quick example of all of this at work
 class Create_User extends Migration
 {
 	public function up()
-	{          
+	{
 		$this->create_table( "users", array(
 			'title' => 'string',
 			'is_admin' => array('boolean', 'null' => FALSE, 'default' => 0)
@@ -150,9 +156,9 @@ class Create_User extends Migration
 		$this->execute(
 			"INSERT INTO `users` (`id`, `title`, `is_admin`) VALUES(1, 'user1', 1);
 			INSERT INTO `users` (`id`, `title`, `is_admin`) VALUES(2, 'user2', 0);"
-		);		
+		);
 	}
-	
+
 	public function down()
 	{
 		$this->remove_index("users", "latlon");
@@ -191,7 +197,7 @@ and each column can have options like these
 * primary - TRUE or FALSE
 
 You can use custom database types, to do this skip the column type and define it directly:
-	
+
 	$this->add_column('table', 'column', array('type' => 'BIGINT', 'null' => FALSE, 'unsigned' => TRUE));
 	$this->add_column('table', 'column', array('type' => 'GEOMETRY', 'null' => FALSE));
 
@@ -229,8 +235,60 @@ PRIMARY KEYS
 
 Primary keys have special handlings. When you create a table, it will create a composite primary key with all your fields with 'primary' => TRUE, and when you add a column with primary_key, it will drop the current primary key and assign the new column as primary key
 
-## Footnotes 
+## Footnotes
 A lot of this text has been taken from http://guides.rubyonrails.org/migrations.html as I've tried to mimic their functionality and interface as much as I could.
+
+Helper Tasks
+------------
+
+There are some more built in tasks to help you manage your database
+
+	minion db:structure:dump
+
+Copy the structure of one database to another.
+Will ask for confirmation before proceeding.
+
+options:
+
+ - __from__ database id from config/database.php file to load structure from, 'default' by default
+ - __to__ database id from config/database.php file to dump structure to
+ - __force__ se this flag to skip confirmation
+
+	minion db:structure:copy
+
+Dump the current database structure to a file (migrations/schema.sql by default)
+options:
+
+ - __database__ the id of the database to dump from the config/database.php file, 'default' by default, configurable from config
+ - __file__ file override the schema.sql file location to dump to another file
+
+	minion db:structure:load
+
+Load the structure in migrations/schema.sql file to the database, clearing the database in the process.
+Will ask for confirmation before proceeding.
+options:
+
+ - __database__ the id of the database to load to from the config/database.php file, 'default' by default, can be overwritten from config
+ - __force__ use this flag to skip confirmation
+ - __file__ override the schema.sql file to load another sql file
+
+	minion db:test:load
+
+Load the latest structure to the test database.
+Will also load all the sql files from test/test_data/structure/test-schema-{type}.sql where {type} is based on the test database type.
+
+	minion db:recreate
+
+Drop all the tables and rerun all the migrations.
+Will ask for confirmation before proceeding.
+
+options:
+
+ - force: use this flag to skip confirmation
+
+	minion db:version
+
+Get the current migration version
 
 Templates
 ---------

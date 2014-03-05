@@ -3,9 +3,11 @@
  * Load the structure in migrations/schema.sql file to the database, clearing the database in the process.
  * Will ask for confirmation before proceeding.
  *
- * @param string database the id of the database to load to from the config/database.php file, 'default' by default
- * @param boolean force use this flag to skip confirmation
- * @param string file override the schema.sql file to load another sql file
+ * options:
+ *  - database: the id of the database to load to from the config/database.php file, 'default' by default, can be overwritten from config
+ *  - force: use this flag to skip confirmation
+ *  - file: override the schema.sql file to load another sql file
+ *
  * @author     Ivan Kerin
  * @copyright  (c) 2011-2014 OpenBuildings Inc.
  * @license    http://www.opensource.org/licenses/isc-license.txt

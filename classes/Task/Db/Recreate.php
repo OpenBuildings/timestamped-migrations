@@ -3,7 +3,9 @@
  * Drop all the tables and rerun all the migrations.
  * Will ask for confirmation before proceeding.
  *
- * @param boolean force use this flag to skip confirmation
+ * options:
+ *  - force: use this flag to skip confirmation
+ *
  * @author     Ivan Kerin
  * @copyright  (c) 2011-2014 OpenBuildings Inc.
  * @license    http://www.opensource.org/licenses/isc-license.txt

@@ -2,8 +2,11 @@
 /**
  * Dump the current database structure to a file (migrations/schema.sql by default)
  *
- * @param string database the id of the database to dump from the config/database.php file, 'default' by default
- * @param string file override the schema.sql file location to dump to another file
+ * options:
+ *
+ *  - database: the id of the database to dump from the config/database.php file, 'default' by default, configurable from config
+ *  - file: file override the schema.sql file location to dump to another file
+ *
  * @author     Ivan Kerin
  * @copyright  (c) 2011-2014 OpenBuildings Inc.
  * @license    http://www.opensource.org/licenses/isc-license.txt
