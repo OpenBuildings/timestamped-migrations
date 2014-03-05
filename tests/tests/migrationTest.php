@@ -15,7 +15,7 @@ class Unit_MigrationTest extends PHPUnit_Framework_TestCase {
 
 	public function test_driver_class()
 	{
-		$this->setExpectedException('ErrorException');
+		$this->setExpectedException('PHPUnit_Framework_Error');
 		$migration = new Migration_One(array('type' => 'mysql'));
 		$dummy_driver = new stdClass;
 		$migration->driver($dummy_driver);
