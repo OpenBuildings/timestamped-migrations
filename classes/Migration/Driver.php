@@ -13,7 +13,7 @@ abstract class Migration_Driver
 
 	/**
 	 * Get the driver of a srtain type
-	 * @param type $type 
+	 * @param type $type
 	 * @return type
 	 */
 	static public function factory($database = 'default')
@@ -56,7 +56,7 @@ abstract class Migration_Driver
 		{
 			return $this->versions;
 		}
-		else 
+		else
 		{
 			$this->versions = $versions;
 		}
@@ -68,7 +68,7 @@ abstract class Migration_Driver
 	abstract public function table($name);
 	abstract public function column($name);
 	abstract public function quote($string);
-	
+
 	abstract public function create_table($table_name, $fields, $primary_key = TRUE);
 	abstract public function drop_table($table_name);
 	abstract public function change_table($table_name, $options);

@@ -31,8 +31,8 @@ class Migration_Driver_Mysql extends Migration_Driver
 			}
 
 			$this->pdo = new PDO(
-				$database['connection']['dsn'], 
-				$database['connection']['username'], 
+				$database['connection']['dsn'],
+				$database['connection']['username'],
 				$database['connection']['password'],
 				array(PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8")
 			);
@@ -63,11 +63,11 @@ class Migration_Driver_Mysql extends Migration_Driver
 	public function table($name)
 	{
 		return new Migration_Driver_Mysql_Table($name, $this);
-	}	
+	}
 
 	public function execute($sql, $params = NULL)
 	{
-		try 
+		try
 		{
 			$statement = $this->pdo->prepare($sql);
 			if ($params)
@@ -79,8 +79,8 @@ class Migration_Driver_Mysql extends Migration_Driver
 				$statement->execute();
 			}
 			$this->_affected_rows = $statement->rowCount();
-		} 
-		catch (PDOException $e) 
+		}
+		catch (PDOException $e)
 		{
 			throw new Migration_Exception(":sql\n Exception: :message", array(':sql' => $sql, ":message" => $e->getMessage()));
 		}
@@ -90,13 +90,13 @@ class Migration_Driver_Mysql extends Migration_Driver
 
 	public function query($sql, $params = NULL)
 	{
-		try 
+		try
 		{
 			$query = $this->pdo->prepare($sql);
 			$query->execute($params);
 			return $query;
-		} 
-		catch (PDOException $e) 
+		}
+		catch (PDOException $e)
 		{
 			throw new Migration_Exception(":sql\n Exception: :message", array(':sql' => $sql, ":message" => $e->getMessage()));
 		}
@@ -124,7 +124,7 @@ class Migration_Driver_Mysql extends Migration_Driver
 		$this->execute("RENAME TABLE `$old_name` TO `$new_name`");
 		return $this;
 	}
-	
+
 	public function add_column($table_name, $column_name, $params)
 	{
 		$column = $this->column($column_name)->params($params);
@@ -148,7 +148,7 @@ class Migration_Driver_Mysql extends Migration_Driver
 		$this->execute("ALTER TABLE `$table_name` CHANGE `$column_name` ".$column->sql());
 		return $this;
 	}
-	
+
 	public function change_column($table_name, $column_name, $params)
 	{
 		$this->execute("ALTER TABLE `$table_name` MODIFY ".$this->column($column_name)->params($params)->sql());
@@ -160,14 +160,14 @@ class Migration_Driver_Mysql extends Migration_Driver
 		$this->execute("ALTER TABLE `$table_name` ".join(' ', (array) $options));
 		return $this;
 	}
-	
+
 	public function remove_column($table_name, $column_name)
 	{
 		$this->execute("ALTER TABLE `$table_name` DROP COLUMN `$column_name`");
 
 		return $this;
 	}
-	
+
 	public function add_index($table_name, $index_name, $columns, $index_type = 'normal')
 	{
 		switch ($index_type)
@@ -177,7 +177,7 @@ class Migration_Driver_Mysql extends Migration_Driver
 			case 'primary':  $type = 'PRIMARY KEY'; break;
 			case 'fulltext': $type = 'FULLTEXT'; break;
 			case 'spatial':  $type = 'SPATIAL'; break;
-			
+
 			default: throw new Migration_Exception("Incorrect index type :index_type, normal, unique primary, fulltext and spacial allowed", array(':index_type' => $index_type));
 		}
 		$columns = (array) $columns;
@@ -186,12 +186,12 @@ class Migration_Driver_Mysql extends Migration_Driver
 		{
 			$column = "`$column`";
 		}
-		
+
 		$sql = join(' ', array(
 			"ALTER TABLE `$table_name` ADD $type `$index_name`",
 			'('.join(', ', $columns).')'
 		));
-		
+
 		$this->execute($sql);
 		return $this;
 	}
@@ -201,6 +201,4 @@ class Migration_Driver_Mysql extends Migration_Driver
 		$this->execute("ALTER TABLE `$table_name` DROP INDEX `$index_name`");
 		return $this;
 	}
-	
-
 }

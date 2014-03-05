@@ -32,7 +32,7 @@ class Migrations
 		$driver = 'Migration_Driver_'.$driver_name;
 
 		// Create the database connection instance
-		$this->driver = new $driver(Arr::get(Kohana::$config->load('migrations'), 'database', 'default'));    
+		$this->driver = new $driver(Arr::get(Kohana::$config->load('migrations'), 'database', 'default'));
 
 		$this->driver->versions()->init();
 
@@ -41,12 +41,12 @@ class Migrations
 			mkdir($this->config['path'], 0777, TRUE);
 		}
 	}
-	
+
 	public function set_executed($version)
 	{
 		$this->driver->versions()->set($version);
 	}
-	
+
 	public function set_unexecuted($version)
 	{
 		$this->driver->versions()->clear($version);
@@ -70,10 +70,10 @@ class Migrations
 		$filename = sprintf("%d_$name.php", time());
 
 		file_put_contents(
-			$this->config['path'].DIRECTORY_SEPARATOR.$filename, 
+			$this->config['path'].DIRECTORY_SEPARATOR.$filename,
 			strtr($template, array(
-				'{up}' => join("\n", array_map('Migrations::indent', $actions->up)), 
-				'{down}' => join("\n", array_map('Migrations::indent', $actions->down)), 
+				'{up}' => join("\n", array_map('Migrations::indent', $actions->up)),
+				'{down}' => join("\n", array_map('Migrations::indent', $actions->down)),
 				'{class_name}' => $class_name
 			))
 		);
@@ -119,9 +119,9 @@ class Migrations
 
 		return new $class($this->config);
 	}
-	
+
 	/**
-	 * Retrieves all the timestamps of the migration files 
+	 * Retrieves all the timestamps of the migration files
 	 *
 	 * @return   array
 	 */
@@ -169,7 +169,7 @@ class Migrations
 		$this->log($version.' '.get_class($migration).' : migrating '.$direction.($dry_run ? " -- Dry Run" : ''));
 		$start = microtime(TRUE);
 
-		switch ($direction) 
+		switch ($direction)
 		{
 			case 'down':
 				$migration->down();
@@ -178,7 +178,7 @@ class Migrations
 					$this->set_unexecuted($version);
 				}
 			break;
-			
+
 			case 'up':
 				$migration->up();
 				if ( ! $dry_run)
@@ -200,12 +200,12 @@ class Migrations
 		}
 		else
 		{
-			foreach ($down as $version) 
+			foreach ($down as $version)
 			{
 				$this->execute($version, 'down', $dry_run);
 			}
-			
-			foreach ($up as $version) 
+
+			foreach ($up as $version)
 			{
 				$this->execute($version, 'up', $dry_run);
 			}

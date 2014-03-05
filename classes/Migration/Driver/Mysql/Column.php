@@ -60,11 +60,11 @@ class Migration_Driver_Mysql_Column extends Migration_Driver_Column
 	{
 		if (is_string($table_name))
 		{
-			try 
+			try
 			{
 				$result = $this->driver->pdo->query("SHOW COLUMNS FROM `$table_name` LIKE '{$this->name}'");
-			} 
-			catch (PDOException $e) 
+			}
+			catch (PDOException $e)
 			{
 				$result = NULL;
 			}
@@ -73,7 +73,7 @@ class Migration_Driver_Mysql_Column extends Migration_Driver_Column
 			{
 				throw new Migration_Exception("Column :column was not found in table :table", array(':column' => $this->name, ':table' => $this->name));
 			}
-			
+
 			$result = $result->fetchObject();
 		}
 		else
@@ -95,7 +95,7 @@ class Migration_Driver_Mysql_Column extends Migration_Driver_Column
 			$limit = NULL;
 			$unsigned = NULL;
 			$values = explode(',', $enum_type[1]);
-			foreach ($values as & $value) 
+			foreach ($values as & $value)
 			{
 				$value = trim($value, "'");
 			}
@@ -111,7 +111,7 @@ class Migration_Driver_Mysql_Column extends Migration_Driver_Column
 			'auto' => $result->Extra == 'auto_increment',
 			'primary' => $result->Key == 'PRI',
 		));
-		
+
 		return $this;
 	}
 
@@ -126,9 +126,9 @@ class Migration_Driver_Mysql_Column extends Migration_Driver_Column
 
 		return join(' ', array_filter(array(
 			"`{$this->name}`",
-			$type, 
-			$limit ? ($precision ? ( "({$limit}, {$precision})" ) : "({$limit})") : NULL, 
-			$values ? ('('.join(', ', array_map(array($this->driver->pdo, 'quote'), $values)).')') : NULL, 
+			$type,
+			$limit ? ($precision ? ( "({$limit}, {$precision})" ) : "({$limit})") : NULL,
+			$values ? ('('.join(', ', array_map(array($this->driver->pdo, 'quote'), $values)).')') : NULL,
 			$unsigned ? ("UNSIGNED") : NULL,
 			($default OR $default === 0 OR $default === '0') ? ("DEFAULT ".$this->driver->pdo->quote($default)) : NULL,
 			$null !== NULL ? ($null ? "NULL" : "NOT NULL") : NULL,
@@ -138,5 +138,4 @@ class Migration_Driver_Mysql_Column extends Migration_Driver_Column
 			$first ? ("FIRST") : NULL,
 		)));
 	}
-
 }

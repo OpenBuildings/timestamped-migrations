@@ -1,22 +1,22 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 /**
  * Generate a migration file
- * 
+ *
  * Based on the name of the migration it will be populated with appropraite commands:
- * 
+ *
  *  - add_<column>_and_<column>_to_<table>
  *  - remove_<column>_and_<column>_from_<table>
  *  - drop_table_<table>
  *  - rename_table_<table>_to_<new table>
  *  - rename_<column>_to_<new column>_in_<table>
  *  - change_<column>_in_<table>
- * 	
+ *
  * You can also chain those together with also:
- * 
+ *
  *  add_<column>_to_<table>_also_drop_table_<table>
- * 	
+ *
  * Additionally based on column names it will try to guess the type, using 'string' by default:
- * 
+ *
  *  - ..._id, ..._count, ..._width, ..._height, ..._x, ..._y, id or position - integer
  *  - ..._at - datetime
  *  - ..._on - date

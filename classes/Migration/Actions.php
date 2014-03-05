@@ -24,7 +24,7 @@ class Migration_Actions
 		'change_column'  => '/^change_(.+)_in_(.+)$/',
 	);
 
-	public function __construct(Migration_Driver $driver) 
+	public function __construct(Migration_Driver $driver)
 	{
 		$this->driver = $driver;
 	}
@@ -33,7 +33,7 @@ class Migration_Actions
 	{
 		foreach (explode('_also_', $string) as $part)
 		{
-			foreach (self::$patterns as $method => $pattern) 
+			foreach (self::$patterns as $method => $pattern)
 			{
 				if (preg_match($pattern, $part, $matches))
 				{
@@ -58,7 +58,7 @@ class Migration_Actions
 
 	public function add_columns($columns, $table)
 	{
-		foreach (explode('_and_', $columns) as $column) 
+		foreach (explode('_and_', $columns) as $column)
 		{
 			$this->up[] = "\$this->add_column('$table', '$column', '".self::guess_column_type($column)."');";
 			$this->down[] = "\$this->remove_column('$table', '$column');";
@@ -67,7 +67,7 @@ class Migration_Actions
 
 	public function remove_columns($columns, $table)
 	{
-		foreach (explode('_and_', $columns) as $column) 
+		foreach (explode('_and_', $columns) as $column)
 		{
 			$this->up[] = "\$this->remove_column('$table', '$column');";
 
@@ -75,31 +75,31 @@ class Migration_Actions
 			{
 				$field_params = $this->driver->column($column)->load($table);
 
-				$this->down[] = "\$this->add_column('$table', '$column', ".self::field_params_to_string($field_params).");";	
+				$this->down[] = "\$this->add_column('$table', '$column', ".self::field_params_to_string($field_params).");";
 			}
 			catch (Migration_Exception $e)
 			{
-				$this->down[] = "\$this->add_column('$table', '$column', 'string');";	
+				$this->down[] = "\$this->add_column('$table', '$column', 'string');";
 			}
 		}
 	}
 
 	public function create_table($tables)
 	{
-		foreach (explode('_and_', $tables) as $table_name) 
+		foreach (explode('_and_', $tables) as $table_name)
 		{
 			$this->up[] = "\$this->create_table('{$table_name}', array( ));";
 			$this->down[] = "\$this->drop_table('{$table_name}');";
-		}		
+		}
 	}
 
 	public function drop_table($tables)
 	{
-		foreach (explode('_and_', $tables) as $table_name) 
+		foreach (explode('_and_', $tables) as $table_name)
 		{
 			$this->up[] = "\$this->drop_table('{$table_name}');";
 
-			try 
+			try
 			{
 				$table = $this->driver->table($table_name)->load();
 				$fields = array();
@@ -115,7 +115,7 @@ class Migration_Actions
 					$options[] = "'$name' => '$option'";
 				}
 
-				$this->down[] = "\$this->create_table('{$table->name()}', array( ".join(',', $fields)." \n\t\t), array( ".join(',', $options)." )); ";	
+				$this->down[] = "\$this->create_table('{$table->name()}', array( ".join(',', $fields)." \n\t\t), array( ".join(',', $options)." )); ";
 			}
 			catch (Migration_Exception $e)
 			{
@@ -127,30 +127,30 @@ class Migration_Actions
 	public function rename_table($old_name, $new_name)
 	{
 		$this->up[] = "\$this->rename_table('$old_name', '$new_name');";
-		$this->down[] = "\$this->rename_table('$new_name', '$old_name');";		
+		$this->down[] = "\$this->rename_table('$new_name', '$old_name');";
 	}
 
 	public function rename_column($old_name, $new_name, $table)
 	{
 		$this->up[] = "\$this->rename_column('$table', '$old_name', '$new_name');";
-		$this->down[] = "\$this->rename_column('$table', '$new_name', '$old_name');";		
+		$this->down[] = "\$this->rename_column('$table', '$new_name', '$old_name');";
 	}
 
 	public function change_column($columns, $table)
 	{
-		foreach (explode('_and_', $columns) as $column) 
+		foreach (explode('_and_', $columns) as $column)
 		{
 			$this->up[] = "\$this->change_column('$table', '$column', '".self::guess_column_type($column)."');";
 
-			try 
+			try
 			{
 				$field_params = $this->driver->column($column)->load($table);
 
-				$this->down[] = "\$this->change_column('$table', '$column', ".self::field_params_to_string($field_params).");";	
+				$this->down[] = "\$this->change_column('$table', '$column', ".self::field_params_to_string($field_params).");";
 			}
 			catch (Migration_Exception $e)
 			{
-				$this->down[] = "\$this->change_column('$table', '$column', 'string');";	
+				$this->down[] = "\$this->change_column('$table', '$column', 'string');";
 			}
 		}
 	}
@@ -164,17 +164,17 @@ class Migration_Actions
 			if ($option) {
 				if (is_array($option))
 				{
-					foreach ($option as & $param) 
+					foreach ($option as & $param)
 					{
 						$param = "'$param'";
 					}
 					$option = 'array('.join(', ', $option).')';
 				}
-				elseif (is_bool($option)) 
+				elseif (is_bool($option))
 				{
 					$option = $option ? 'TRUE' : 'FALSE';
-				} 
-				elseif (is_string($option)) 
+				}
+				elseif (is_string($option))
 				{
 					$option = "'$option'";
 				}
@@ -184,7 +184,7 @@ class Migration_Actions
 
 		return "array( ".join(', ', $options).')';
 	}
-	
+
 
 	static public function guess_column_type($column)
 	{
@@ -205,12 +205,10 @@ class Migration_Actions
 
 		if (preg_match('/_on$/', $column))
 			return 'date';
-		
+
 			if (preg_match('/^(description|text)$/', $column))
-				return 'text';			
+				return 'text';
 
 		return 'string';
 	}
-
-
 }

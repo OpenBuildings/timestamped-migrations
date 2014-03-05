@@ -22,7 +22,7 @@ abstract class Migration_Driver_Table
 		{
 			return $this->name;
 		}
-		
+
 		$this->name = (string) $name;
 		return $this;
 	}

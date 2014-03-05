@@ -21,12 +21,12 @@ class Migration_Driver_Mysql_Table extends Migration_Driver_Table
 			$columns = array_merge(array('id' => 'primary_key'), $columns);
 		}
 
-		foreach ($columns as $column_name => $params) 
+		foreach ($columns as $column_name => $params)
 		{
 			$this->columns[$column_name] = $this->driver->column($column_name)->params($params);
 		}
 
-		return $this;		
+		return $this;
 	}
 
 	public function load()
@@ -47,7 +47,7 @@ class Migration_Driver_Mysql_Table extends Migration_Driver_Table
 		$fields_reuslt = $this->driver->pdo->query("SHOW COLUMNS FROM `{$this->name}`");
 
 		while($result = $fields_reuslt->fetchObject())
-		{			
+		{
 			$this->columns[$result->Field] = $this->driver->column($result->Field)->load($result);
 		}
 		return $this;
@@ -58,7 +58,7 @@ class Migration_Driver_Mysql_Table extends Migration_Driver_Table
 		$primary_keys = array();
 		$columns = array();
 
-		foreach ($this->columns as $column) 
+		foreach ($this->columns as $column)
 		{
 			$columns[] = $column->sql();
 			if ($column->param('primary'))
@@ -78,5 +78,4 @@ class Migration_Driver_Mysql_Table extends Migration_Driver_Table
 			$this->options
 		)));
 	}
-
 }

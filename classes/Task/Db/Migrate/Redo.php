@@ -28,7 +28,7 @@ class Task_DB_Migrate_Redo extends Minion_Migration {
 		{
 			if (in_array($options['version'], $executed))
 			{
-				$down[] = $options['version'];	
+				$down[] = $options['version'];
 			}
 		}
 		else

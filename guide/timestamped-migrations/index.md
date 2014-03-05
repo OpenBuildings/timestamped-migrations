@@ -1,6 +1,6 @@
 Migrations are a convenient way for you to alter your database in a structured and organized manner. You could edit fragments of SQL by hand but you would then be responsible for telling other developers that they need to go and run them. You’d also have to keep track of which changes need to be run against the production machines next time you deploy.
 
-Migrations module tracks which migrations have already been run so all you have to do is update your source and run ./kohana db:migrate. Migrations module will work out which migrations should be run. 
+Migrations module tracks which migrations have already been run so all you have to do is update your source and run ./kohana db:migrate. Migrations module will work out which migrations should be run.
 
 Migrations also allow you to describe these transformations using PHP. The great thing about this is that it is database independent: you don’t need to worry about the precise syntax of CREATE TABLE any more than you worry about variations on SELECT * (you can drop down to raw SQL for database specific features). For example you could use SQLite3 in development, but MySQL in production.
 
@@ -52,6 +52,6 @@ You can generate a migration with the db:generate command which will create a fi
 
 	./kohana db:generate create_user
 
-# Footnotes 
+# Footnotes
 A lot of this text has been taken from http://guides.rubyonrails.org/migrations.html as I've tried to mimic their functionality and interface as much as I could.
-	
+

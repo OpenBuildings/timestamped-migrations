@@ -1,7 +1,7 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
 /**
- * Mysql Driver 
+ * Mysql Driver
  *
  * @package    Despark/timestamped-migrations
  * @author		 Matías Montes

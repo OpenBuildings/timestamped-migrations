@@ -24,12 +24,12 @@ class Unit_Migration_Driver_MysqlTest extends PHPUnit_Framework_TestCase {
 		);
 
 		$driver->create_table("test", array(
-			'field1' => 'integer', 
+			'field1' => 'integer',
 			'field2' => array('string', 'null' => false)
 		), array('options' => 'ENGINE=innoDB'));
 
 		$driver->create_table("test", array(
-			'field1' => 'primary_key', 
+			'field1' => 'primary_key',
 			'field2' => array('string', 'null' => false)
 		), array('id' => false));
 	}
@@ -46,7 +46,7 @@ class Unit_Migration_Driver_MysqlTest extends PHPUnit_Framework_TestCase {
 	{
 		$driver = $this->getMock('Migration_Driver_Mysql', array('execute'), array(Kohana::TESTING));
 		$driver->expects($this->at(0))->method('execute')->with($this->equalTo('RENAME TABLE `table1` TO `table2`'));
-		
+
 		$driver->rename_table('table1', 'table2');
 	}
 
@@ -163,5 +163,4 @@ class Unit_Migration_Driver_MysqlTest extends PHPUnit_Framework_TestCase {
 		$driver = new Migration_Driver_Mysql(Kohana::TESTING);
 		$this->assertEquals($result, $driver->column('field2')->params($type)->sql());
 	}
-
 }

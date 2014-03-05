@@ -57,5 +57,4 @@ class Unit_MigrationTest extends PHPUnit_Framework_TestCase {
 		$migration->dry_run(TRUE);
 		call_user_func_array(array($migration, $method), $args);
 	}
-	
 }

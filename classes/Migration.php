@@ -75,7 +75,7 @@ abstract class Migration
 			$return = call_user_func_array(array($this->driver, $method), $args);
 		}
 		$end = microtime(TRUE);
-		
+
 		if ($title)
 		{
 			$this->log('   --> '.number_format($end-$start, 4).'s'.($method == 'execute' ? ', affected rows: '.$this->driver->affected_rows() : ''));
@@ -92,7 +92,7 @@ abstract class Migration
 			$display = preg_replace("/[\s\t]+/", " ", $display);
 			$display = "execute( ".Text::limit_chars($display, 80)." )";
 		}
-		return $this->run_driver($display, __FUNCTION__, $args);		
+		return $this->run_driver($display, __FUNCTION__, $args);
 	}
 
 	public function query($sql, $params = NULL)
@@ -101,7 +101,7 @@ abstract class Migration
 		$display = str_replace("\n", '↵', $sql);
 		$display = preg_replace("/[\s\t]+/", " ", $display);
 		$display = Text::limit_chars($display, 60);
-		return $this->run_driver("query( $display )", __FUNCTION__, $args, TRUE);		
+		return $this->run_driver("query( $display )", __FUNCTION__, $args, TRUE);
 	}
 
 
@@ -169,8 +169,8 @@ abstract class Migration
 
 	/**
 	 * Change table options (passed directly to alter table)
-	 * 
-	 * @param string $table_name 
+	 *
+	 * @param string $table_name
 	 * @param array $options an array of options
 	 * @return boolean
 	 */
@@ -192,7 +192,7 @@ abstract class Migration
 		$args = func_get_args();
 		return $this->run_driver("rename_table( $old_name, $new_name )", __FUNCTION__, $args);
 	}
-	
+
 	/**
 	 * Add a column to a table
 	 *
@@ -211,7 +211,7 @@ abstract class Migration
 		$args = func_get_args();
 		return $this->run_driver("add_column( $table_name, $column_name )", __FUNCTION__, $args);
 	}
-	
+
 	/**
 	 * Rename a column
 	 *
@@ -225,7 +225,7 @@ abstract class Migration
 		$args = func_get_args();
 		return $this->run_driver("rename_column( $table_name, $column_name, $new_column_name )", __FUNCTION__, $args);
 	}
-	
+
 	/**
 	 * Alter a column
 	 *
@@ -239,7 +239,7 @@ abstract class Migration
 		$args = func_get_args();
 		return $this->run_driver("change_column( $table_name, $column_name )", __FUNCTION__, $args);
 	}
-	
+
 	/**
 	 * Remove a column from a table
 	 *
@@ -280,5 +280,5 @@ abstract class Migration
 		$args = func_get_args();
 		return $this->run_driver("remove_index( $table_name, $index_name )", __FUNCTION__, $args);
 	}
-	
+
 }

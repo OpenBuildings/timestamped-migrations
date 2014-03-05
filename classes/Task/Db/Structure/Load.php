@@ -47,5 +47,4 @@ class Task_DB_Structure_Load extends Minion_Database {
 			Minion_CLI::write(Minion_CLI::color('Nothing done', 'brown'));
 		}
 	}
-
 }

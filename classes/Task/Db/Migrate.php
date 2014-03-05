@@ -28,13 +28,13 @@ class Task_DB_Migrate extends Minion_Migration {
 				{
 					$up[] = $migration;
 				}
-				if (in_array($migration, $executed) AND $migration > $options['version']) 
+				if (in_array($migration, $executed) AND $migration > $options['version'])
 				{
 					$down[] = $migration;
 				}
 			}
 		}
-		elseif ($options['steps']) 
+		elseif ($options['steps'])
 		{
 			$up = array_slice($unexecuted, 0, $options['steps']);
 		}

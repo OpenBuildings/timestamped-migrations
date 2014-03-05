@@ -10,7 +10,7 @@ abstract class Minion_Database extends Minion_Task {
 
 	protected function db_params($database)
 	{
-		$db = Kohana::$config->load("database.$database.connection");	
+		$db = Kohana::$config->load("database.$database.connection");
 
 		if ( ! isset($db['database']) )
 		{

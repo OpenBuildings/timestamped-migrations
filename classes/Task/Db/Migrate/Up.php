@@ -28,7 +28,7 @@ class Task_DB_Migrate_Up extends Minion_Migration {
 		{
 			if (in_array($options["version"], $unexecuted))
 			{
-				$up[] = $options["version"];	
+				$up[] = $options["version"];
 			}
 		}
 		else

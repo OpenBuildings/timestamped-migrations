@@ -28,17 +28,16 @@ class Task_DB_Structure_Copy extends Minion_Database {
 	{
 		Minion_Task::factory(array(
 				'task' => 'db:structure:dump',
-				'database' => $options['from'], 
+				'database' => $options['from'],
 				'force' => $options['force']
 			))
 			->execute();
 
 		Minion_Task::factory(array(
 				'task' => 'db:structure:load',
-				'database' => $options['to'], 
+				'database' => $options['to'],
 				'force' => $options['force']
 			))
 			->execute();
 	}
-
 }

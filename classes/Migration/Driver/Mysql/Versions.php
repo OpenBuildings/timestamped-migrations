@@ -53,5 +53,5 @@ class Migration_Driver_Mysql_Versions extends Migration_Driver_Versions
 	{
 		$this->pdo->exec('DELETE FROM `'.self::SCHEMA_TABLE.'`');
 		return $this;
-	}	
+	}
 }
