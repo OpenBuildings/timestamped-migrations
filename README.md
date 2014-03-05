@@ -2,6 +2,8 @@ Timestamped Migrations
 ======================
 
 [![Build Status](https://travis-ci.org/OpenBuildings/timestamped-migrations.png?branch=master)](https://travis-ci.org/OpenBuildings/timestamped-migrations)
+[![Scrutinizer Quality Score](https://scrutinizer-ci.com/g/OpenBuildings/timestamped-migrations/badges/quality-score.png?s=44bba08bc99dd687c7e0780c5b3f76bba5ae70f1)](https://scrutinizer-ci.com/g/OpenBuildings/timestamped-migrations/)
+[![Code Coverage](https://scrutinizer-ci.com/g/OpenBuildings/timestamped-migrations/badges/coverage.png?s=a4f5002841b99c8fd4bbdbb078235d87fd4b3124)](https://scrutinizer-ci.com/g/OpenBuildings/timestamped-migrations/)
 [![Latest Stable Version](https://poser.pugx.org/openbuildings/timestamped-migrations/v/stable.png)](https://packagist.org/packages/openbuildings/timestamped-migrations)
 
 Migrations are a convenient way for you to alter your database in a structured and organized manner. You could edit fragments of SQL by hand but you would then be responsible for telling other developers that they need to go and run them. You'd also have to keep track of which changes need to be run against the production machines next time you deploy.
