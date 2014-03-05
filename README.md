@@ -245,50 +245,62 @@ Helper Tasks
 
 There are some more built in tasks to help you manage your database
 
-	minion db:structure:dump
+```
+minion db:structure:dump
+```
 
 Copy the structure of one database to another.
 Will ask for confirmation before proceeding.
 
 options:
 
- - __from__ database id from config/database.php file to load structure from, 'default' by default
- - __to__ database id from config/database.php file to dump structure to
- - __force__ se this flag to skip confirmation
+* __from__ database id from config/database.php file to load structure from, 'default' by default
+* __to__ database id from config/database.php file to dump structure to
+* __force__ se this flag to skip confirmation
 
-	minion db:structure:copy
+```
+minion db:structure:copy
+```
 
 Dump the current database structure to a file (migrations/schema.sql by default)
 options:
 
- - __database__ the id of the database to dump from the config/database.php file, 'default' by default, configurable from config
- - __file__ file override the schema.sql file location to dump to another file
+- __database__ the id of the database to dump from the config/database.php file, 'default' by default, configurable from config
+- __file__ file override the schema.sql file location to dump to another file
 
-	minion db:structure:load
+```
+minion db:structure:load
+```
 
 Load the structure in migrations/schema.sql file to the database, clearing the database in the process.
 Will ask for confirmation before proceeding.
 options:
 
- - __database__ the id of the database to load to from the config/database.php file, 'default' by default, can be overwritten from config
- - __force__ use this flag to skip confirmation
- - __file__ override the schema.sql file to load another sql file
+- __database__ the id of the database to load to from the config/database.php file, 'default' by default, can be overwritten from config
+- __force__ use this flag to skip confirmation
+- __file__ override the schema.sql file to load another sql file
 
-	minion db:test:load
+```
+minion db:test:load
+```
 
 Load the latest structure to the test database.
 Will also load all the sql files from test/test_data/structure/test-schema-{type}.sql where {type} is based on the test database type.
 
-	minion db:recreate
+```
+minion db:recreate
+```
 
 Drop all the tables and rerun all the migrations.
 Will ask for confirmation before proceeding.
 
 options:
 
- - force: use this flag to skip confirmation
+- force: use this flag to skip confirmation
 
-	minion db:version
+```
+minion db:version
+```
 
 Get the current migration version
 
