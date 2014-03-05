@@ -10,9 +10,10 @@ script:
 
 before_script:
   - mkdir -p build/logs
-  - composer require --dev satooshi/php-coveralls:dev-master
+  - composer selfupdate
   - composer install
   - mysql -e 'create database `test-timestamp-migrations`;'
 
 after_script:
-  - php vendor/bin/coveralls -v
+  - wget https://scrutinizer-ci.com/ocular.phar
+  - php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml
