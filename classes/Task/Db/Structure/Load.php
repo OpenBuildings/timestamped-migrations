@@ -18,6 +18,12 @@ class Task_DB_Structure_Load extends Minion_Database {
 		'file' => FALSE
 	);
 
+    protected function __construct()
+    {
+        $this->_options['database'] = Kohana::$config->load("migrations.database");
+        parent::__construct();
+    }
+
 	protected function _execute(array $options)
 	{
 		$db = $this->db_params($options['database']);
@@ -25,10 +31,11 @@ class Task_DB_Structure_Load extends Minion_Database {
 
 		if ($options['force'] === NULL OR 'yes' === Minion_CLI::read("This will destroy database ".$db['database']." Are you sure? [yes/NO]"))
 		{
-			$command = strtr("mysql -u:username :password :database < :file ", array(
+			$command = strtr("mysql -u:username :password -h :hostname :database < :file ", array(
 				':username' => $db['username'],
 				':password' => $db['password'] ? '-p'.$db['password'] : '',
 				':database' => $db['database'],
+                ':hostname' => $db['hostname'],
 				':file'     => $file
 			));
 
