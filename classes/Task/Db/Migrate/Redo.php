@@ -6,7 +6,7 @@
  * @param integer steps how many times to migrate down before going back up.
  * @param boolean dry-run if this flag is set, will run the migration without accually touching the database, only showing the result.
  * @author     Ivan Kerin
- * @copyright  (c) 2011-2012 Despark Ltd.
+ * @copyright  (c) 2011-2014 OpenBuildings Inc.
  * @license    http://www.opensource.org/licenses/isc-license.txt
  */
 class Task_DB_Migrate_Redo extends Minion_Migration {

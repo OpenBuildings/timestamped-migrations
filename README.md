@@ -256,8 +256,4 @@ And you're done. If you use the --template option, all the name patters are of c
 License
 -------
 
-timestamped migrations are Copyright © 2012-2013 OpenBuildings Ltd. developed by Ivan Kerin. It is free software, and may be redistributed under the terms specified in the LICENSE file.
-
-
-
-	
+timestamped migrations are Copyright © 2012-2014 OpenBuildings Inc. developed by Ivan Kerin. It is free software, and may be redistributed under the terms specified in the LICENSE file.

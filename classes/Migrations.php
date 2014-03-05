@@ -5,7 +5,7 @@
  *
  * @package    Despark/timestamped-migrations
  * @author     Ivan Kerin
- * @copyright  (c) 2011-2012 Despark Ltd.
+ * @copyright  (c) 2011-2014 OpenBuildings Inc.
  * @license    http://creativecommons.org/licenses/by-sa/3.0/legalcode
  */
 class Migrations

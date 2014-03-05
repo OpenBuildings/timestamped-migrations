@@ -5,7 +5,7 @@
  *
  * @param boolean force use this flag to skip confirmation
  * @author     Ivan Kerin
- * @copyright  (c) 2011-2012 Despark Ltd.
+ * @copyright  (c) 2011-2014 OpenBuildings Inc.
  * @license    http://www.opensource.org/licenses/isc-license.txt
  */
 class Task_DB_Recreate extends Minion_Task {

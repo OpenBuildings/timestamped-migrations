@@ -5,7 +5,7 @@
  * @param string database the id of the database to dump from the config/database.php file, 'default' by default
  * @param string file override the schema.sql file location to dump to another file
  * @author     Ivan Kerin
- * @copyright  (c) 2011-2012 Despark Ltd.
+ * @copyright  (c) 2011-2014 OpenBuildings Inc.
  * @license    http://www.opensource.org/licenses/isc-license.txt
  */
 class Task_DB_Structure_Dump extends Minion_Database {
