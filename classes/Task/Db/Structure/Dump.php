@@ -15,17 +15,24 @@ class Task_DB_Structure_Dump extends Minion_Database {
 		'file' => FALSE,
 	);
 
-	protected function _execute(array $options)
+    protected function __construct()
+    {
+        $this->_options['database'] = Kohana::$config->load("migrations.database");
+        parent::__construct();
+    }
+
+    protected function _execute(array $options)
 	{
 		$db = $this->db_params($options['database']);
 
 		$file = $options['file'] ? $options['file'] : Kohana::$config->load("migrations.path").DIRECTORY_SEPARATOR.'schema.sql';
 		
-		$command = strtr("mysqldump -u:username :password --skip-comments --add-drop-database --add-drop-table --no-data :database | sed 's/AUTO_INCREMENT=[0-9]*\b//' > :file ", array(
+		$command = strtr("mysqldump -u:username :password -h :hostname --skip-comments --add-drop-database --add-drop-table --no-data :database | sed 's/AUTO_INCREMENT=[0-9]*\b//' > :file ", array(
 			':username' => $db['username'],
 			':password' => $db['password'] ? '-p'.$db['password'] : '',
 			':database' => $db['database'],
-			':file'      => $file
+			':hostname' => $db['hostname'],
+			':file'     => $file
 		));
 
 		Minion_CLI::write(Minion_CLI::color('Saving structure of database "'.$db['database'].'" to '.Debug::path($file), 'green'));
