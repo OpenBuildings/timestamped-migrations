@@ -129,13 +129,13 @@ class Migration_Driver_Mysql_Column extends Migration_Driver_Column
 			$type, 
 			$limit ? ($precision ? ( "({$limit}, {$precision})" ) : "({$limit})") : NULL, 
 			$values ? ('('.join(', ', array_map(array($this->driver->pdo, 'quote'), $values)).')') : NULL, 
-			$default ? ("DEFAULT ".$this->driver->pdo->quote($default)) : NULL,
 			$unsigned ? ("UNSIGNED") : NULL,
+			($default OR $default === 0 OR $default === '0') ? ("DEFAULT ".$this->driver->pdo->quote($default)) : NULL,
 			$null !== NULL ? ($null ? "NULL" : "NOT NULL") : NULL,
 			$auto ? ("AUTO_INCREMENT") : NULL,
+			$comment ? ("COMMENT '{$comment}'") : NULL,
 			$after ? ("AFTER `{$after}`") : NULL,
 			$first ? ("FIRST") : NULL,
-			$comment ? ("COMMENT '{$comment}'") : NULL,
 		)));
 	}
 
