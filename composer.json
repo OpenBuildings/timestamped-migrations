@@ -17,7 +17,6 @@
 		"composer/installers": "*"
 	},
 	"require-dev": {
-		"phpunit/phpunit": "3.7.*",
 		"openbuildings/kohana-test-bootsrap": "0.1.*"
 	}
 }
