@@ -5,14 +5,21 @@ php:
   - 5.4
   - 5.5
 
-script:
-  - phpunit --coverage-clover build/logs/clover.xml
+notifications:
+  email: false
+  slack:
+    secure: MZ3YIxNmEZDR2NP4gesB/omMknBlriYfXQWFlbbRobraFdJXTQnNxrS5CBX/fAg8l4QRmiUi8fY1QsGIIkFmDDCG7isOsxiZlaf8Av2Vs0rHX4k6yDThcCQ39f8r1F4gEwzPJS5wr8csBQbIsUvMkaActmBQms8yQ4by/RbGPNc=
+
+install:
+  - composer selfupdate
+  - composer install --no-interaction
 
 before_script:
   - mkdir -p build/logs
-  - composer selfupdate
-  - composer install
   - mysql -e 'create database `test-timestamp-migrations`;'
+
+script:
+  - phpunit --coverage-clover build/logs/clover.xml
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
