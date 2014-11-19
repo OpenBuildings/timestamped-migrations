@@ -25,9 +25,13 @@ class Migration_Driver_Mysql extends Migration_Driver
 
 			if ($database['type'] !== 'PDO')
 			{
-				$database['connection']['dsn'] = strtolower($database['type'].':'.
-				'host='.$database['connection']['hostname'].';'.
-				'dbname='.$database['connection']['database']);
+				$database['connection']['dsn'] = strtolower($database['type']
+					.':host='.$database['connection']['hostname']
+					.';dbname='.$database['connection']['database']
+					.(isset($database['connection']['charset'])
+						? ';charset='.$database['connection']['charset']
+						: '')
+				);
 			}
 
 			$this->pdo = new PDO(
