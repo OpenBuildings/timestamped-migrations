@@ -89,7 +89,7 @@ abstract class Migration
 		if ($display === NULL)
 		{
 			$display = str_replace("\n", '↵', $sql);
-			$display = preg_replace("/[\s\t]+/", " ", $display);
+			$display = preg_replace("/[\s]+/", " ", $display);
 			$display = "execute( ".Text::limit_chars($display, 80)." )";
 		}
 		return $this->run_driver($display, __FUNCTION__, $args);
@@ -99,7 +99,7 @@ abstract class Migration
 	{
 		$args = func_get_args();
 		$display = str_replace("\n", '↵', $sql);
-		$display = preg_replace("/[\s\t]+/", " ", $display);
+		$display = preg_replace("/[\s]+/", " ", $display);
 		$display = Text::limit_chars($display, 60);
 		return $this->run_driver("query( $display )", __FUNCTION__, $args, TRUE);
 	}
