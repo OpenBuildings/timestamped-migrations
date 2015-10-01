@@ -20,7 +20,7 @@ class Migration_Actions
 		'create_table'   => '/^create_table_(.+)$/',
 		'drop_table'     => '/^drop_table_(.+)$/',
 		'rename_table'   => '/^rename_table_(.+)_to_(.+)$/',
-		'rename_column'  => '/^rename_(.+)_to_(.+)_in_(.+)$/',
+		'rename_column'  => '/^rename_(.+)_in_(.+)$/',
 		'change_column'  => '/^change_(.+)_in_(.+)$/',
 	);
 
@@ -130,10 +130,21 @@ class Migration_Actions
 		$this->down[] = "\$this->rename_table('$new_name', '$old_name');";
 	}
 
-	public function rename_column($old_name, $new_name, $table)
+	public function rename_column($columns, $table)
 	{
-		$this->up[] = "\$this->rename_column('$table', '$old_name', '$new_name');";
-		$this->down[] = "\$this->rename_column('$table', '$new_name', '$old_name');";
+		foreach (explode('_and_', $columns) as $column)
+		{
+			if (preg_match('/^(.+)_to_(.+)$/', $column, $matches))
+			{
+				if (count($matches) === 3)
+				{
+					$old_name = $matches[1];
+					$new_name = $matches[2];
+					$this->up[] = "\$this->rename_column('$table', '$old_name', '$new_name');";
+					$this->down[] = "\$this->rename_column('$table', '$new_name', '$old_name');";
+				}
+			}
+		}
 	}
 
 	public function change_column($columns, $table)

@@ -106,7 +106,7 @@ class Migration_Driver_Mysql_Column extends Migration_Driver_Column
 			'limit' => $limit,
 			'unsigned' => $unsigned,
 			'values' => $values,
-			'null' => $result->Null == 'NO' ? TRUE : FALSE,
+			'null' => $result->Null == 'NO' ? FALSE : TRUE,
 			'default' => $result->Default ? $result->Default : NULL,
 			'auto' => $result->Extra == 'auto_increment',
 			'primary' => $result->Key == 'PRI',
