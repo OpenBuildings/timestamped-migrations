@@ -1,9 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file"
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "This file is @generated automatically"
     ],
-    "hash": "d3c8fd70b9b5280acf8a372214fb237a",
+    "content-hash": "859e210d37d7caaa5ced0c09d00ad0a5",
     "packages": [
         {
             "name": "composer/installers",
@@ -87,7 +88,7 @@
                 "zend",
                 "zikula"
             ],
-            "time": "2014-02-24 04:21:34"
+            "time": "2014-02-24T04:21:34+00:00"
         }
     ],
     "packages-dev": [
@@ -124,20 +125,17 @@
                 }
             ],
             "description": "Kohana core classes repackaged with composer, used to test modules",
-            "time": "2013-10-01 08:57:54"
+            "abandoned": "openbuildings/kohana-test-bootstrap",
+            "time": "2013-10-01T08:57:54+00:00"
         }
     ],
-    "aliases": [
-
-    ],
+    "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [
-
-    ],
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
     "platform": {
         "php": ">=5.3.0"
     },
-    "platform-dev": [
-
-    ]
+    "platform-dev": []
 }

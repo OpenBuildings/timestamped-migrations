@@ -18,5 +18,10 @@
 	},
 	"require-dev": {
 		"openbuildings/kohana-test-bootsrap": "0.1.*"
-	}
+	},
+    "autoload": {
+        "psr-4": {
+            "Clippings\\Migrations\\": "src"
+        }
+    }
 }
