@@ -15,7 +15,7 @@ Migrations also allow you to describe these transformations using PHP. The great
 Dependencies
 ------------
 
-This module utilizes the built-in kohana minion module for it's command line interface. The system is fairly decoupled from it though so you can easily implement this with other cli tools if you use something different.
+This module utilizes the built-in  [Kohana-minion](https://github.com/kohana/minion) for it's command line interface. The system is fairly decoupled from it though so you can easily implement this with other cli tools if you use something different.
 
 Options
 -------
@@ -24,47 +24,63 @@ Options
 * path - the path to where the migrations will be stored, defaults to APPPATH/migrations
 * type - the driver for the backend for which migrations have been already executed as well as the migrations themselves, defaults to mysql
 
-Command line tools
+Migration command line tools
 ------------------
 
 This module provides a set of kohana-minion tasks to work with migrations giving you the ability to easily create, run and rollback them. All of them have extensive documentation which you can easily read with kohana-minion's built in commands, e. g.
 
 	./minion db:migrate --help
 
-The most common migration related task you use will probably be db:migrate. In its most basic form it just runs the up method for all the migrations that have not yet been run. If there are no such migrations it exits.
+Migrate all new migrations
+------------------
 
+The most common migration related task you use will probably be `db:migrate`. In its most basic form it just runs the up method for all new migration versions, that have not been executed yet. If there are no such migrations it exits.
+
+    ./minion db:migrate
+    
 If you specify a target version, Active Record will run the required migrations (up or down) until it has reached the specified version. The version is the numerical prefix on the migration’s filename. For example to migrate to version 1322837510 run
 
 	./minion db:migrate --version=1322837510
 
-If this is greater than the current version (i.e. it is migrating upwards) this will run the up method on all migrations up to and including 2008090612, if migrating downwards this will run the down method on all the migrations down to, but not including, 2008090612.
+If this is greater than the current version (i.e. it is migrating upwards) this will run the up method on all migrations up to and including 1322837510, if migrating downwards this will run the down method on all the migrations down to, but not including, 1322837510.
 
-Rolling Back
+Migrate a migration
+------------
+The `db:migrate:up` will migrate the first migration version that has not been migrated yet.
+
+    ./minion db:migrate:up
+
+
+Rolling back a migration
 ------------
 
-A common task is to rollback the last migration, for example if you made a mistake in it and wish to correct it. Rather than tracking down the version number associated with the previous migration you can run
+The `db:migration:down` is used to rollback the last migrated migration, for example if you made a mistake in it and wish to correct it. Rather than tracking down the version number associated with the previous migration you can run the step below without specifying any version number. 
 
-	./minion db:rollback
+	./minion db:migrate:down
 
-This will run the down method from the latest migration. If you need to undo several migrations you can provide a --step option:
+Redo a migration
+------------
+The `db:migrate:redo` task is a shortcut for doing a rollback and then migrating back up again. It will execute *db:migrate:down* and after that *db:migrate:up* again. 
 
-	./minion db:rollback --step=3
-will run the down method from the last 3 migrations.
+	./minion db:migrate:redo
 
-The db:migrate:redo task is a shortcut for doing a rollback and then migrating back up again. As with the db:rollback task you can use the --step option if you need to go more than one version back, for example
-
-	./minion db:migrate:redo --step=3
-
-Neither of these commands do anything you could not do with db:migrate, they are simply more convenient since you do not need to explicitly specify the version to migrate to.
-
-Being Specific
---------------
-
-If you need to run a specific migration up or down the db:migrate:up and db:migrate:down commands will do that. Just specify the appropriate version and the corresponding migration will have its up or down method invoked, for example
+Migrate specific version
+------------
+If you need to run a specific migration up or down the `db:migrate:up` and `db:migrate:down` commands will do that. Just specify the appropriate version and the corresponding migration will have its up or down method invoked, for example
 
 	./minion db:migrate:up --version=1321025460
 
-will run the up method from the 2008090612 migration. These commands check whether the migration has already run, so for example db:migrate:up --version=2008090612 will do nothing if Migrations module believes that --version=1321025460 has already been run.
+will run the up method from the 1321025460 migration. These commands check whether the migration has already run, so for example db:migrate:up --version=1321025460 will do nothing if Migrations module believes that --version=1321025460 has already been run.
+
+Migrate last few steps
+------------
+The commands `db:migrate:up`, `db:migrate:down` and `db:migrate:redo` by default are executed for just one migration. However they support `--step` option. It allows you migrate several migration steps at once. For example:
+
+    	./minion db:migrate:down --step=3
+
+ will roll back last 3 migrations that has been migrated.
+
+Neither of these commands do anything you could not do with *db:migrate*, they are simply more convenient since you do not need to explicitly specify the version to migrate to.
 
 Dry Run
 -------
@@ -77,15 +93,46 @@ You can add a ``--dry-run`` option and it will only show you the migrations that
 Generating a migration
 ----------------------
 
-You can generate a migration with the db:generate command which will create a file inside the path you've specified in the config of the module. It will prefix the filename with the timestamp and return the created filename
+You can generate a migration with the `db:generate` command which will create a file inside the path you've specified in the config of the module. It will prefix the filename with the timestamp and return the created filename
 
-	./minion db:generate --name=create_users
+	./minion db:generate --name=my_migration
 
-will create a migration that looks like this
+ will display `1495194020_my_migration_user.php Migration File Generated`. It creates scaffold with `up()` and `down()` methods. The migration file will looklike this:
 
-``` php
+```php
+class My_Migration extends Migration
+{
+    public function up()
+    {
+
+    }
+
+    public function down()
+    {
+
+    }
+}
+```
+
+---------
+There are several patterns in the filename that will be recognized and converted to actual helper methods in the up/down methods of the migration.
+
+* create\_table\_{table}
+* drop\_table\_{table}
+* add\_{columns}\_to\_{table} where {columns} is a list of column names, delimited by ``_and_`` so you can write ``add_name_and_title_to_users`` - which will add both columns.
+* remove\_{columns}\_from\_{table}
+* change\_{columns}\_in\_{table}
+* rename\_table\_{old\_name}\_to\_{new\_name}
+* rename\_{old\_column\_name}\_to\_{new\_column\_name}\_in\_{table\_name}
+
+
+To create a users table you could use following command
+
+	    ./minion db:generate --name=create_table_users
+
+```php
 <?php defined('SYSPATH') OR die('No direct script access.');
-class Create_User extends Migration
+class Create_Users extends Migration
 {
 	public function up()
 	{
@@ -100,23 +147,36 @@ class Create_User extends Migration
 ?>
 ```
 
-There are several patterns in the filename that will be recognized and converted to actual helper methods in the up/down methods of the migration.
+You can use more than one pattern if you separate them with ``_also_``. For example
+to create a users table, columns login and name at once use command
 
-* create\_table\_{table}
-* drop\_table\_{table}
-* add\_{columns}\_to\_{table} where {columns} is a list of column names, delimited by ``_and_`` so you can write ``add_name_and_title_to_users`` - which will add both columns.
-* remove\_{columns}\_from\_{table}
-* change\_{columns}\_in\_{table}
-* rename\_table\_{old\_name}\_to\_{new\_name}
-* rename\_{old\_column\_name}\_to\_{new\_column\_name}\_in\_{table\_name}
+    ./minion db:generate --name=create_table_users_also_add_login_and_name
 
-You can use more than one pattern if you separate them with ``_also_``
+which will create a migration:
 
-	php kohana db:generate add_name_and_title_to_users_also_create_profiles
+```php
+class Create_Table_Users_Also_Add_Login_And_Name_To_Users extends Migration
+{
+    public function up()
+    {
+        $this->create_table('users', array( ));
+        $this->add_column('users', 'login', 'string');
+        $this->add_column('users', 'name', 'string');
+    }
+
+    public function down()
+    {
+        $this->drop_table('users');
+        $this->remove_column('users', 'login');
+        $this->remove_column('users', 'name');
+    }
+}
+```
+
+Column types are guessed according to suffix - \_id and \_count columns will be integers, \_at -> datetime, \_on -> date, is\_ -> boolean and "description" and "text" will be assumed to be text. The default type of a column is string.
 
 If none of the patterns match, it will just create a migration with empty up and down methods.
 
-Additionally - column types are guessed according to suffix - \_id and \_count columns will be integers, \_at -> datetime, \_on -> date, is\_ -> boolean and "description" and "text" will be assumed to be text. The default type of a column is string.
 
 Helper Methods
 --------------
@@ -328,4 +388,4 @@ And you're done. If you use the --template option, all the name patters are of c
 License
 -------
 
-timestamped migrations are Copyright © 2012-2014 OpenBuildings Inc. developed by Ivan Kerin. It is free software, and may be redistributed under the terms specified in the LICENSE file.
+timestamped migrations are Copyright © 2012-2017 OpenBuildings Inc. developed by Ivan Kerin. It is free software, and may be redistributed under the terms specified in the LICENSE file.
