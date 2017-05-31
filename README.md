@@ -38,7 +38,9 @@ The most common migration related task you use will probably be `db:migrate`. In
 
     ./minion db:migrate
     
-If you specify a target version, Active Record will run the required migrations (up or down) until it has reached the specified version. The version is the numerical prefix on the migration’s filename. For example to migrate to version 1322837510 run
+Migrate several migrations 
+------------
+If you specify a target version, then all required migrations (up or down) until the specified version will be migrated. The version is the numerical prefix on the migration’s filename. For example to migrate to version 1322837510 run
 
 	./minion db:migrate --version=1322837510
 
@@ -73,6 +75,8 @@ If you need to run a specific migration up or down the `db:migrate:up` and `db:m
 	./minion db:migrate:up --version=1321025460
 
 will run the up method from the 1321025460 migration. These commands check whether the migration has already run, so for example db:migrate:up --version=1321025460 will do nothing if Migrations module believes that --version=1321025460 has already been run.
+
+Note: This migrates just a specific version. But './minion db:migrate --version=' without (*":up"* or *":down"*) will migrate several migrations until the specified version is reached. 
 
 Migrate last few steps
 ------------
