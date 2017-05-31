@@ -44,6 +44,8 @@ If you specify a target version, Active Record will run the required migrations 
 
 If this is greater than the current version (i.e. it is migrating upwards) this will run the up method on all migrations up to and including 1322837510, if migrating downwards this will run the down method on all the migrations down to, but not including, 1322837510.
 
+Notes: To track migrated version a table `schema_version` is created. It is used to store all already migrated version so far.
+
 Migrate a migration
 ------------
 The `db:migrate:up` will migrate the first migration version that has not been migrated yet.
