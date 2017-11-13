@@ -27,7 +27,7 @@ class Task_DB_Structure_Dump extends Minion_Database {
 
 		$file = $options['file'] ? $options['file'] : Kohana::$config->load("migrations.path").DIRECTORY_SEPARATOR.'schema.sql';
 		
-		$command = strtr("mysqldump -u:username :password -h :hostname --skip-comments --add-drop-database --add-drop-table --no-data :database | sed 's/AUTO_INCREMENT=[0-9]*\b//' > :file ", array(
+		$command = strtr("mysqldump -u:username :password -h :hostname --skip-comments --add-drop-database --add-drop-table --no-data :database | sed 's/ AUTO_INCREMENT=[0-9]*\b//' > :file ", array(
 			':username' => $db['username'],
 			':password' => $db['password'] ? '-p'.$db['password'] : '',
 			':database' => $db['database'],
