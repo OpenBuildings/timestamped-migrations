@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
-class MigrationTest extends PHPUnit_Framework_TestCase {
+class MigrationTest extends \PHPUnit\Framework\TestCase {
 
 	public function test_load_driver()
 	{

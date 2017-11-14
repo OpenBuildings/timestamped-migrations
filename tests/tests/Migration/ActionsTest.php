@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
-class Migration_ActionsTest extends PHPUnit_Framework_TestCase {
+class Migration_ActionsTest extends \PHPUnit\Framework\TestCase {
 
 	public function data_parse_name()
 	{
