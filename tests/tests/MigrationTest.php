@@ -11,10 +11,6 @@ class MigrationTest extends \PHPUnit\Framework\TestCase {
 	public function test_driver_class()
 	{
 		$this->expectException('TypeError');
-		$message = <<<MESSAGE
-Argument 1 passed to Migration::driver() must be an instance of Migration_Driver or null, instance of stdClass given
-MESSAGE;
-		$this->expectExceptionMessage($message);
 		$migration = new Migration_One(array('type' => 'mysql'));
 		$dummy_driver = new stdClass;
 		$migration->driver($dummy_driver);
