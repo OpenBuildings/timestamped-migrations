@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
-class Migration_Driver_MysqlTest extends PHPUnit_Framework_TestCase {
+class Migration_Driver_MySQLTest extends PHPUnit_Framework_TestCase {
 
 	public function test_create_table()
 	{
