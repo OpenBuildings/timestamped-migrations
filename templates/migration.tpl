@@ -10,15 +10,15 @@
 * add_index($table_name, $index_name, $columns, $index_type = 'normal')
 * remove_index($table_name, $index_name)
 */
-class {class_name} extends Migration
-{
-    public function up()
-    {
-{up}
-    }
+class {class_name} extends Migration {
 
-    public function down()
-    {
+	public function up()
+	{
+{up}
+	}
+
+	public function down()
+	{
 {down}
-    }
+	}
 }

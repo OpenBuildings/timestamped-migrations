@@ -78,7 +78,7 @@ class Migrations
 
 	static function indent($action)
 	{
-		return "        $action";
+		return "\t\t$action";
 	}
 
 	/**

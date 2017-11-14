@@ -99,7 +99,7 @@ class Migration_Actions
 
 				foreach ($table->columns as $name => $field_params)
 				{
-					$fields[] = "\n            '$name' => ".self::field_params_to_string($field_params);
+					$fields[] = "\n\t\t\t'$name' => ".self::field_params_to_string($field_params);
 				}
 
 				foreach($table->options as $name => $option)
@@ -107,7 +107,7 @@ class Migration_Actions
 					$options[] = "'$name' => '$option'";
 				}
 
-				$this->down[] = "\$this->create_table('{$table->name()}', array( ".join(',', $fields)." \n        ), array( ".join(',', $options)." )); ";
+				$this->down[] = "\$this->create_table('{$table->name()}', array( ".join(',', $fields)." \n\t\t), array( ".join(',', $options)." )); ";
 			}
 			catch (Migration_Exception $e)
 			{
