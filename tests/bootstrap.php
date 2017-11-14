@@ -7,18 +7,6 @@ Kohana::modules(array(
 	'timestamp-migrations' => __DIR__.'/..',
 ));
 
-function test_autoload($class)
-{
-	$file = str_replace('_', '/', $class);
-
-	if ($file = Kohana::find_file('tests/classes', $file))
-	{
-		require_once $file;
-	}
-}
-
-spl_autoload_register('test_autoload');
-
 Kohana::$config
 	->load('database')
 		->set('default', array(
