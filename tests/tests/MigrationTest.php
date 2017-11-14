@@ -10,7 +10,11 @@ class MigrationTest extends \PHPUnit\Framework\TestCase {
 
 	public function test_driver_class()
 	{
-		$this->setExpectedException('PHPUnit_Framework_Error');
+		$this->expectException('TypeError');
+		$message = <<<MESSAGE
+Argument 1 passed to Migration::driver() must be an instance of Migration_Driver or null, instance of stdClass given
+MESSAGE;
+		$this->expectExceptionMessage($message);
 		$migration = new Migration_One(array('type' => 'mysql'));
 		$dummy_driver = new stdClass;
 		$migration->driver($dummy_driver);
@@ -38,12 +42,17 @@ class MigrationTest extends \PHPUnit\Framework\TestCase {
 	 */
 	public function test_driver_calling($method, $args)
 	{
-		$logger = $this->getMock('Migration_Logger', array('log'));
+		$logger = $this->getMockBuilder('Migration_Logger')
+			->setMethods(array('log'))
+			->getMock();
 		$logger->expects($this->exactly(4))->method('log');
 
 		$migration = new Migration_One(array('type' => 'mysql', 'log' => array($logger, 'log')));
 
-		$driver = $this->getMock('Migration_Driver_Mysql', array($method), array(Kohana::TESTING));
+		$driver = $this->getMockBuilder('Migration_Driver_Mysql')
+			->setMethods(array($method))
+			->setConstructorArgs(array(Kohana::TESTING))
+			->getMock();
 		$driver->expects($this->once())->method($method);
 
 		$migration->driver($driver);

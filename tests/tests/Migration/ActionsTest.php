@@ -42,7 +42,10 @@ class Migration_ActionsTest extends \PHPUnit\Framework\TestCase {
 	public function test_parse_name($name, $method_name, $up, $down)
 	{
 		$driver = new Migration_Driver_Mysql(Kohana::TESTING);
-		$actions = $this->getMock('Migration_Actions', array($method_name), array($driver));
+		$actions = $this->getMockBuilder('Migration_Actions')
+			->setMethods(array($method_name))
+			->setConstructorArgs(array($driver))
+			->getMock();
 		$method = $actions->expects($this->once())->method($method_name);
 		$actions->parse($name);
 

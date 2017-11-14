@@ -4,7 +4,7 @@ class Migration_Driver_MySQLTest extends \PHPUnit\Framework\TestCase {
 
 	public function test_create_table()
 	{
-		$driver = $this->getMock('Migration_Driver_Mysql', array('execute'), array(Kohana::TESTING));
+		$driver = $this->getMySQLDriverMock();
 		$driver->expects($this->at(0))->method('execute')->with($this->logicalAnd(
 			$this->stringContains('CREATE TABLE `test`'),
 			$this->stringContains('`id` INT NOT NULL AUTO_INCREMENT'),
@@ -32,14 +32,14 @@ class Migration_Driver_MySQLTest extends \PHPUnit\Framework\TestCase {
 
 	public function test_drop_table()
 	{
-		$driver = $this->getMock('Migration_Driver_Mysql', array('execute'), array(Kohana::TESTING));
+		$driver = $this->getMySQLDriverMock();
 		$driver->expects($this->at(0))->method('execute')->with($this->equalTo('DROP TABLE `table1`'));
 		$driver->drop_table('table1');
 	}
 
 	public function test_rename_table()
 	{
-		$driver = $this->getMock('Migration_Driver_Mysql', array('execute'), array(Kohana::TESTING));
+		$driver = $this->getMySQLDriverMock();
 		$driver->expects($this->at(0))->method('execute')->with($this->equalTo('RENAME TABLE `table1` TO `table2`'));
 
 		$driver->rename_table('table1', 'table2');
@@ -47,7 +47,7 @@ class Migration_Driver_MySQLTest extends \PHPUnit\Framework\TestCase {
 
 	public function test_add_column()
 	{
-		$driver = $this->getMock('Migration_Driver_Mysql', array('execute'), array(Kohana::TESTING));
+		$driver = $this->getMySQLDriverMock();
 		$driver->expects($this->at(0))->method('execute')->with($this->equalTo('ALTER TABLE `table1` ADD COLUMN `field1` INT'));
 		$driver->expects($this->at(1))->method('execute')->with($this->equalTo('ALTER TABLE `table1` DROP PRIMARY KEY, ADD COLUMN `field1` INT NOT NULL AUTO_INCREMENT, ADD PRIMARY KEY (`field1`)'));
 
@@ -57,9 +57,15 @@ class Migration_Driver_MySQLTest extends \PHPUnit\Framework\TestCase {
 
 	public function test_rename_column()
 	{
-		$driver = $this->getMock('Migration_Driver_Mysql', array('execute', 'column'), array(Kohana::TESTING));
+		$driver = $this->getMockBuilder('Migration_Driver_Mysql')
+			->setMethods(array('execute', 'column'))
+			->setConstructorArgs(array(Kohana::TESTING))
+			->getMock();
 
-		$column = $this->getMock('Migration_Driver_Mysql_Column', array('load'), array('field2', $driver));
+		$column = $this->getMockBuilder('Migration_Driver_Mysql_Column')
+			->setMethods(array('load'))
+			->setConstructorArgs(array('field2', $driver))
+			->getMock();
 		$column->expects($this->once())->method('load')->will($this->returnValue($column));
 
 		$driver->expects($this->once())->method('column')->will($this->returnValue($column->params('integer')));
@@ -69,21 +75,21 @@ class Migration_Driver_MySQLTest extends \PHPUnit\Framework\TestCase {
 
 	public function test_change_column()
 	{
-		$driver = $this->getMock('Migration_Driver_Mysql', array('execute'), array(Kohana::TESTING));
+		$driver = $this->getMySQLDriverMock();
 		$driver->expects($this->at(0))->method('execute')->with($this->equalTo('ALTER TABLE `table1` MODIFY `field1` INT NOT NULL'));
 		$driver->change_column('table1', 'field1', array('integer', 'null' => false));
 	}
 
 	public function test_remove_column()
 	{
-		$driver = $this->getMock('Migration_Driver_Mysql', array('execute'), array(Kohana::TESTING));
+		$driver = $this->getMySQLDriverMock();
 		$driver->expects($this->at(0))->method('execute')->with($this->equalTo('ALTER TABLE `table1` DROP COLUMN `field1`'));
 		$driver->remove_column('table1', 'field1');
 	}
 
 	public function test_add_index()
 	{
-		$driver = $this->getMock('Migration_Driver_Mysql', array('execute'), array(Kohana::TESTING));
+		$driver = $this->getMySQLDriverMock();
 
 
 		$driver->expects($this->at(0))->method('execute')->with(
@@ -115,7 +121,7 @@ class Migration_Driver_MySQLTest extends \PHPUnit\Framework\TestCase {
 
 	public function test_remove_index()
 	{
-		$driver = $this->getMock('Migration_Driver_Mysql', array('execute'), array(Kohana::TESTING));
+		$driver = $this->getMySQLDriverMock();
 		$driver->expects($this->at(0))->method('execute')->with($this->equalTo('ALTER TABLE `table1` DROP INDEX `index1`'));
 		$driver->remove_index('table1', 'index1');
 	}
@@ -157,5 +163,13 @@ class Migration_Driver_MySQLTest extends \PHPUnit\Framework\TestCase {
 	{
 		$driver = new Migration_Driver_Mysql(Kohana::TESTING);
 		$this->assertEquals($result, $driver->column('field2')->params($type)->sql());
+	}
+
+	private function getMySQLDriverMock()
+	{
+		return $this->getMockBuilder('Migration_Driver_Mysql')
+			->setMethods(array('execute'))
+			->setConstructorArgs(array(Kohana::TESTING))
+			->getMock();
 	}
 }
