@@ -1,25 +1,47 @@
+sudo: false
+
 language: php
 
 php:
-  - 5.3
-  - 5.4
-  - 5.5
+  - 7.0
+  - 7.1
+  - 7.2
+
+env:
+  - DEPS=normal
+  - DEPS=highest
+  - DEPS=lowest
+
+matrix:
+  fast_finish: true
+
+branches:
+  only:
+    - master
+
+cache:
+  directories:
+  - $HOME/.composer/cache
 
 notifications:
   email: false
   slack:
     secure: MZ3YIxNmEZDR2NP4gesB/omMknBlriYfXQWFlbbRobraFdJXTQnNxrS5CBX/fAg8l4QRmiUi8fY1QsGIIkFmDDCG7isOsxiZlaf8Av2Vs0rHX4k6yDThcCQ39f8r1F4gEwzPJS5wr8csBQbIsUvMkaActmBQms8yQ4by/RbGPNc=
 
+before_install:
+  - travis_retry composer selfupdate
+
 install:
-  - composer selfupdate
-  - composer install --no-interaction
+  - if [ "$DEPS" = "normal" ]; then travis_retry composer install --no-interaction; fi;
+  - if [ "$DEPS" = "highest" ]; then travis_retry composer update --no-interaction; fi;
+  - if [ "$DEPS" = "lowest" ]; then travis_retry composer update --no-interaction --prefer-lowest --prefer-stable; fi;
 
 before_script:
   - mkdir -p build/logs
   - mysql -e 'create database `test-timestamp-migrations`;'
 
 script:
-  - phpunit --coverage-clover build/logs/clover.xml
+  - vendor/bin/phpunit --coverage-clover build/logs/clover.xml
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
