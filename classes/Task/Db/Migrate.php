@@ -1,4 +1,5 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
+
 /**
  * Execute all unexecuted migrations. Behavior changes when supplied any of the parameters
  *
@@ -6,10 +7,6 @@
  *  - version: set which version you want to go to. Will execute nessesary migrations to reach this version (up or down)
  *  - steps: how many migrations to execute before stopping. works for both up and down.
  *  - dry-run: if this flag is set, will run the migration without accually touching the database, only showing the result.
- *
- * @author     Ivan Kerin
- * @copyright  (c) 2011-2014 OpenBuildings Inc.
- * @license    http://www.opensource.org/licenses/isc-license.txt
  */
 class Task_DB_Migrate extends Minion_Migration {
 

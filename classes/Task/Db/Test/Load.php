@@ -1,12 +1,9 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
+
 /**
  * Load the latest structure to the test database.
  * Will also load all the sql files from test/test_data/structure/test-schema-<type>.sql
  * where <type> is based on the test database type.
- *
- * @author     Ivan Kerin
- * @copyright  (c) 2011-2014 OpenBuildings Inc.
- * @license    http://www.opensource.org/licenses/isc-license.txt
  */
 class Task_DB_Test_Load extends Minion_Database {
 

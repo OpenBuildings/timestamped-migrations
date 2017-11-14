@@ -1,4 +1,5 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
+
 /**
  * Migrate down the latest migration. Behavior changes when supplied any of the parameters
  *
@@ -6,10 +7,6 @@
  *  - version: migrate all the way down to the specified migration.
  *  - steps: how many times to migrate down
  *  - dry-run if this flag is set, will run the migration without accually touching the database, only showing the result.
- *
- * @author     Ivan Kerin
- * @copyright  (c) 2011-2014 OpenBuildings Inc.
- * @license    http://www.opensource.org/licenses/isc-license.txt
  */
 class Task_DB_Migrate_Down extends Minion_Migration {
 

@@ -1,13 +1,5 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
-/**
- * Driver
- *
- * @package    Despark/timestamped-migrations
- * @author     Ivan Kerin
- * @copyright  (c) 2011-2014 OpenBuildings Inc.
- * @license    http://creativecommons.org/licenses/by-sa/3.0/legalcode
-*/
 class Migration_Driver_Mysql_Table extends Migration_Driver_Table
 {
 

@@ -1,4 +1,5 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
+
 /**
  * Migrate up the first unexecuted migration. Behavior changes when supplied any of the parameters
  *
@@ -6,10 +7,6 @@
  *  - version: migrate all the way up to the specified migration.
  *  - steps: how many times to migrate up
  *  - dry-run: if this flag is set, will run the migration without accually touching the database, only showing the result.
- *
- * @author     Ivan Kerin
- * @copyright  (c) 2011-2014 OpenBuildings Inc.
- * @license    http://www.opensource.org/licenses/isc-license.txt
  */
 class Task_DB_Migrate_Up extends Minion_Migration {
 
