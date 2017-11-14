@@ -1,11 +1,6 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
-/**
- * Tests for Migraiton
- * @group timestamped-migrations
- * @package Timestamped Migraitons
- */
-class Unit_MigrationTest extends PHPUnit_Framework_TestCase {
+class MigrationTest extends PHPUnit_Framework_TestCase {
 
 	public function test_load_driver()
 	{

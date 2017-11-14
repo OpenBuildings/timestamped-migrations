@@ -1,8 +1,8 @@
 <?php
 
 /**
-* Migration One For testing
-*/
+ * Migration One For testing
+ */
 class Migration_One extends Migration
 {
 	public function up()

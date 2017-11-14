@@ -1,11 +1,6 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
-/**
- * Tests for Migraiton Actions
- * @group timestamped-migrations
- * @package Timestamped Migraitons
- */
-class Unit_Migration_ActionsTest extends PHPUnit_Framework_TestCase {
+class Migration_ActionsTest extends PHPUnit_Framework_TestCase {
 
 	public function data_parse_name()
 	{

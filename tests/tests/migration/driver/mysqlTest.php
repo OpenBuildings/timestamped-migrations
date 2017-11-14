@@ -1,11 +1,6 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
-/**
- * Tests for Migraiton Actions
- * @group timestamped-migrations
- * @package Timestamped Migraitons
- */
-class Unit_Migration_Driver_MysqlTest extends PHPUnit_Framework_TestCase {
+class Migration_Driver_MysqlTest extends PHPUnit_Framework_TestCase {
 
 	public function test_create_table()
 	{
